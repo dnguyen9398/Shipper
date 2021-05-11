@@ -4,7 +4,7 @@ import { TouchableOpacity } from 'react-native';
 import { TextInput } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { Text, View } from 'react-native';
-import { GREEN, MAIN_COLOR, WHITE } from '../asset/color';
+import { GRAY, GREEN, MAIN_COLOR, WHITE,ORANGE } from '../asset/color';
 
 const OTP = () => {
   let textInput = useRef(null)
@@ -32,7 +32,7 @@ const OTP = () => {
   return (
       <SafeAreaView style={styles.container}>
         <View style={{marginTop: 122, alignSelf: 'center', width: '90%'}}>
-          <Text style={{textAlign:'center', fontSize: 20, color: WHITE}}>Nhập 6 mã số được gửi đến số điện thoại bạn</Text>
+          <Text style={{textAlign:'center', fontSize: 20, color: WHITE, fontWeight: 'bold'}}>Nhập 6 mã số được gửi đến số điện thoại bạn</Text>
         </View>
         <View>
         <View style={styles.containerInput}>
@@ -43,7 +43,7 @@ const OTP = () => {
                       style={[
                           styles.cellView,
                           {
-                              borderBottomColor: index === internalVal.length ? WHITE : 'black'
+                              borderBottomColor: index === internalVal.length ? WHITE : GRAY, borderBottomWidth: 0.5
                           }]}>
 
                       <TextInput
@@ -81,9 +81,23 @@ const OTP = () => {
         <TouchableOpacity style={styles.buttonStyle}>
             <Text 
                 style={{color: WHITE, fontWeight: 'bold'}}>
-                  TIẾP TỤC
+                  XÁC NHẬN
             </Text>
         </TouchableOpacity>
+        <View style={{alignItems: 'center', marginTop: 30,}}>
+          <Text style={{color: WHITE, fontSize: 16}}>Tôi không nhận được mã ?</Text>
+        </View>
+        <View style={{flex: 1, flexDirection: 'row',justifyContent: 'center',marginTop: 10}}>
+          <TouchableOpacity>
+            <Text style={{fontSize: 16, color: ORANGE}}>Gửi lại mã </Text>
+          </TouchableOpacity>
+          <View>
+            <Text style={{fontSize: 16, color: ORANGE}}> | </Text>
+          </View>
+          <TouchableOpacity>
+            <Text style={{fontSize: 16, color: ORANGE}}> Thay đổi SĐT</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
   )
 }
@@ -100,16 +114,18 @@ const styles = StyleSheet.create({
   },
     cellView: {
       paddingVertical: 5,
-      width: 30,
-      margin: 3,
+      width: 53,
+      alignSelf:'center',
+      margin: 5,
       justifyContent: 'center',
       alignItems: 'center',
       borderBottomWidth: 1.5,
   },
     cellText: {
       textAlign: 'center',
-      fontSize: 20,
+      fontSize: 18,
       color: WHITE,
+      fontWeight: 'bold'
   },
     buttonStyle:{
       height: 50,
