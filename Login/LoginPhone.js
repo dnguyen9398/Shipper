@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { GRAY, GREEN, MAIN_COLOR, WHITE } from '../asset/color';
 import {Hoshi} from 'react-native-textinput-effects'
-const LoginPhone = () => {
+const LoginPhone = ({navigation}) => {
   return (
     <SafeAreaView
       style={styles.container}>
@@ -27,7 +27,9 @@ const LoginPhone = () => {
             ></Hoshi>
         </View>
         <TouchableOpacity style={styles.buttonStyle}>
-            <Text style={{color: WHITE, fontWeight: 'bold'}}>TIẾP TỤC</Text>
+            <Text 
+                style={{color: WHITE, fontWeight: 'bold'}}
+                onPress={()=>{navigation.navigate('OTP')}}>TIẾP TỤC</Text>
         </TouchableOpacity>
         <View style={{flexDirection: 'row', width: '90%', alignSelf: 'center', margin: 30}}>
             <View style={{backgroundColor: GRAY, height: 0.5, flex: 1, alignSelf: 'center'}} />
