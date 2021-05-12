@@ -1,15 +1,18 @@
 import React, { useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import { TouchableOpacity } from 'react-native';
+import { Keyboard } from 'react-native';
+import { ToastAndroid } from 'react-native';
 import { TextInput } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { Text, View } from 'react-native';
-import { GRAY, GREEN, MAIN_COLOR, WHITE,ORANGE } from '../asset/color';
+import { GRAY, GREEN, MAIN_COLOR, WHITE,ORANGE, RED } from '../asset/color';
 
-const OTP = () => {
+const OTP = ({navigation}) => {
   let textInput = useRef(null)
   const [internalVal, setInternalVal] = useState("")
   const lengthInput = 6;
+  const [showError, setShowError] = useState('');
   const onChangeText = (val) => {
     setInternalVal(val)
     // if ((val.length == lengthInput)) {
@@ -29,6 +32,22 @@ const OTP = () => {
     // }
 
 }
+  const onConfirm = () =>{
+    if(internalVal.length == lengthInput){
+      if(internalVal === '123456')
+      {
+        ToastAndroid.show('Đăng Nhập Thành Công', ToastAndroid.SHORT)
+        Keyboard.dismiss()
+        navigation.navigate('Loading')
+      }
+      else{
+        setShowError('Mã OTP không đúng')
+      }
+    }
+    else{
+      setShowError('Vui lòng nhập mã OTP')
+    }
+  }
   return (
       <SafeAreaView style={styles.container}>
         <View style={{marginTop: 122, alignSelf: 'center', width: '90%'}}>
@@ -56,10 +75,8 @@ const OTP = () => {
                           keyboardType='numeric'
                           onPress={() => {
                               textInput.focus()
-                          }}
-                      />
+                          }}/>
                       <TouchableOpacity style={{ width: 30, height: 30, borderWidth: 0, alignItems:'center'}}
-
                           onPress={() => {
                               textInput.focus()
                           }
@@ -78,7 +95,12 @@ const OTP = () => {
               }
           </View>
         </View>
-        <TouchableOpacity style={styles.buttonStyle}>
+        <View style={{justifyContent: 'center', width: '90%', alignSelf: 'center', marginTop:10}}>
+          <Text style={{fontStyle:'italic', color: RED}}>{showError}</Text>
+        </View>
+        <TouchableOpacity 
+          onPress={()=>{onConfirm()}}
+          style={styles.buttonStyle}>
             <Text 
                 style={{color: WHITE, fontWeight: 'bold'}}>
                   XÁC NHẬN
@@ -134,7 +156,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       backgroundColor: GREEN,
       justifyContent: 'center',
-      marginTop: 40
+      marginTop: 30
   },  
 })
 export default OTP;

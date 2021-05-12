@@ -5,6 +5,7 @@ import LoginPhone from './Login/LoginPhone';
 import {NavigationContainer} from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack';
 import OTP from './Login/OTP';
+import Loading from './Loading/Loading';
 const App = () => {
   const Stack = createStackNavigator()
   return (
@@ -17,6 +18,10 @@ const App = () => {
           <Stack.Screen 
             name='OTP' component={OTP}
             options={{ headerShown: false }}
+          ></Stack.Screen>
+          <Stack.Screen
+            name='Loading' component={Loading}
+            options={{headerShown: false}}
           ></Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
