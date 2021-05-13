@@ -5,28 +5,41 @@ import { StyleSheet } from 'react-native';
 import { Text, View } from 'react-native';
 import { MAIN_COLOR, WHITE } from '../asset/color';
 import {UIActivityIndicator } from 'react-native-indicators'
+import { Animated } from 'react-native';
 
-const Loading = ({navigation}) => {
+const Splash = ({navigation}) => {
     useEffect(()=>{
         setTimeout(()=>{
-            navigation.navigate('Home')
-        },3000)
+            navigation.navigate('LoginPhone')
+        },1900)
     },[])
+    const startValue = new Animated.Value(-250);
+    const endValue = 0;
+    const duration = 2000;
+      
+    useEffect(() => {
+        Animated.timing(startValue, {
+          toValue: endValue,
+          duration: duration,
+          useNativeDriver: true,
+        }).start();
+      }, [startValue, endValue, duration]);
+    
     return (
         <SafeAreaView style={styles.container}>
             <View style={{marginTop: 280, alignItems: 'center',}}>
-                <View>
+                <Animated.View style={{transform: [
+              {
+                translateY: startValue,
+              },
+            ],}}>
                     <Image source={require('../img/logo.png')}></Image>
-                </View>
-                    <UIActivityIndicator 
-                        size={30}
-                        color={WHITE} 
-                        style={{marginTop: 89,}}
-                        animationDuration={3000}>
-                    </UIActivityIndicator>
+                </Animated.View>
             </View>
             <View style={{borderWidth: 0, bottom: '2%', position: 'absolute', width: '90%', alignSelf: 'center', flexDirection: 'row'}}>
-                <Image source={require('../img/TikiTech.png')}></Image>
+                <View>
+                    <Image source={require('../img/TikiTech.png')}></Image>
+                </View>
                 <View style={{borderWidth: 0, position: 'absolute', right: 0}}>
                     <Text style={{fontSize: 16, color: WHITE}}>ver.0.1.1</Text>
                 </View>
@@ -40,4 +53,4 @@ const styles = StyleSheet.create({
         backgroundColor: MAIN_COLOR,
     }
 })
-export default Loading;
+export default Splash;
