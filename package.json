@@ -10,18 +10,22 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@kichiyaki/react-native-barcode-generator": "^0.6.7",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/native": "^5.9.4",
     "@react-navigation/stack": "^5.14.5",
     "react": "17.0.1",
     "react-native": "0.64.1",
+    "react-native-barcode-builder": "^2.0.0",
     "react-native-camera": "^3.43.8",
+    "react-native-dashed-line": "^1.1.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-indicators": "^0.17.0",
     "react-native-qrcode-scanner": "^1.5.4",
     "react-native-reanimated": "^2.1.0",
     "react-native-safe-area-context": "^3.2.0",
     "react-native-screens": "^3.1.1",
+    "react-native-svg": "^12.1.1",
     "react-native-textinput-effects": "^0.6.1"
   },
   "devDependencies": {

@@ -7,7 +7,7 @@ import { Text, View } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { GREEN, MAIN_COLOR, WHITE,RED } from '../asset/color';
 
-const Home = () => {
+const Home = ({navigation}) => {
     const [QRcode, setQRcode] = useState('')
     const [showError, setShowError] = useState('');
 
@@ -20,14 +20,23 @@ const Home = () => {
         }
         else{
             setShowError('')
+            if(QRcode == '123456')
+            {
+                navigation.navigate('Info')
+                ToastAndroid.show('Tìm thành công', ToastAndroid.SHORT)
+            }
+            else{
+                SetNotFound(true)
+            }
         }
     }
     const [showSuggest, setShowSuggest] = useState(false)
+    const [notFound, SetNotFound] = useState(false)
   return (
     <SafeAreaView
       style={styles.container}>
     <View style={styles.topView}>
-        <View style={{borderWidth: 0,alignSelf: 'center'}}>
+        <View style={{borderWidth: 0,}}>
             <Image source={require('../img/logosmall.png')}></Image>
         </View>
         <View style={{borderWidth: 0,flexDirection: 'row', alignSelf: 'center', position: 'absolute', right: 0, justifyContent: 'space-between',flex: 2}}>
@@ -94,7 +103,7 @@ const Home = () => {
                                     <Text style={{fontSize: 20, fontWeight: 'bold'}}>Gợi ý cách tìm mã</Text>
                                 </View>
                                 <Image
-                                    style={{marginTop: 20}}
+                                    style={{marginTop: 10}}
                                     source={require('../img/suggest.png')}
                                 ></Image>
                                 <TouchableOpacity
@@ -103,6 +112,34 @@ const Home = () => {
                                         <Text 
                                             style={{color: WHITE, fontWeight: 'bold'}}>
                                             TÔI ĐÃ HIỂU RỒI
+                                        </Text>
+                                </TouchableOpacity>
+                        </View>
+                    </SafeAreaView>
+            </Modal>
+            <Modal
+                visible={notFound}
+                transparent={true}
+                animationType={'slide'}
+                >
+                    <SafeAreaView style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                        <View
+                            style={{backgroundColor: WHITE, width: 312, height: 359, alignItems: 'center', elevation: 12}}>
+                                <Image
+                                    style={{marginTop: 30}}
+                                    source={require('../img/van.png')}
+                                ></Image>
+                                <View style={{alignItems: 'center', marginTop: 20, width:'90%', alignSelf: 'center'}}>
+                                    <Text style={{fontSize: 15, textAlign: 'center'}}>
+                                        Chúng tôi không tìm thấy đơn hàng của bạn. Mã đơn hàng không hợp lệ hoặc đã hết hạn. Vui lòng kiểm tra lại mã đơn hàng bạn đã nhập.
+                                    </Text>
+                                </View>
+                                <TouchableOpacity
+                                    onPress={()=>{SetNotFound(false)}}
+                                    style={styles.buttonModalStyle}>
+                                        <Text 
+                                            style={{color: GREEN, fontWeight: 'bold', fontSize: 18}}>
+                                            ĐÓNG
                                         </Text>
                                 </TouchableOpacity>
                         </View>
@@ -124,6 +161,15 @@ const styles = StyleSheet.create({
         elevation: 1.5,
         justifyContent: 'center',
         flexDirection: 'row',
+        alignItems: 'center'
+    },
+    buttonModalStyle:{
+        width:'90%',
+        alignSelf: 'center',
+        alignItems: 'center',
+        backgroundColor: WHITE,
+        justifyContent: 'flex-end',
+        marginTop: 20
     },
     buttonStyle:{
         height: 50,
@@ -132,7 +178,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: GREEN,
         justifyContent: 'center',
-        marginTop: 20
-    },  
+        marginTop: 15
+        },
 })
 export default Home;

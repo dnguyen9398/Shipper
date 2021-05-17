@@ -8,6 +8,7 @@ import OTP from './Login/OTP';
 import Loading from './Loading/Loading';
 import Home from './Screens/Home';
 import Splash from './Loading/Splash';
+import Info from './Screens/Info';
 const App = () => {
   const Stack = createStackNavigator()
   return (
@@ -31,6 +32,10 @@ const App = () => {
           ></Stack.Screen>
           <Stack.Screen
             name='Home' component={Home}
+            options={{headerShown: false}}
+          ></Stack.Screen>
+          <Stack.Screen
+            name='Info' component={Info}
             options={{headerShown: false}}
           ></Stack.Screen>
         </Stack.Navigator>

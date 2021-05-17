@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { Keyboard } from 'react-native';
-import { ToastAndroid } from 'react-native';
+import { ToastAndroid, Image } from 'react-native';
 import { TextInput } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { Text, View } from 'react-native';
@@ -50,6 +50,11 @@ const OTP = ({navigation}) => {
   }
   return (
       <SafeAreaView style={styles.container}>
+        <TouchableOpacity 
+                style={{borderWidth: 0, left: 0, position: 'absolute', marginLeft: 20, marginTop: 15}}
+                onPress={()=>{navigation.goBack()}}>
+                <Image source={require('../img/arrow.png')} style={{tintColor: WHITE}}></Image>
+            </TouchableOpacity>
         <View style={{marginTop: 122, alignSelf: 'center', width: '90%'}}>
           <Text style={{textAlign:'center', fontSize: 20, color: WHITE, fontWeight: 'bold'}}>Nhập 6 mã số được gửi đến số điện thoại bạn</Text>
         </View>
