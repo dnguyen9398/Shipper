@@ -8,8 +8,9 @@ import { StyleSheet } from 'react-native';
 import { Text, View } from 'react-native';
 import { GRAY, GREEN, MAIN_COLOR, WHITE,ORANGE, RED } from '../asset/color';
 
-const OTP = ({navigation}) => {
+const OTP = ({route,navigation}) => {
   let textInput = useRef(null)
+  const {phoneNumber} = route.params;
   const [internalVal, setInternalVal] = useState("")
   const lengthInput = 6;
   const [showError, setShowError] = useState('');
@@ -56,7 +57,7 @@ const OTP = ({navigation}) => {
                 <Image source={require('../img/arrow.png')} style={{tintColor: WHITE}}></Image>
             </TouchableOpacity>
         <View style={{marginTop: 122, alignSelf: 'center', width: '90%'}}>
-          <Text style={{textAlign:'center', fontSize: 20, color: WHITE, fontWeight: 'bold'}}>Nhập 6 mã số được gửi đến số điện thoại bạn</Text>
+          <Text style={{textAlign:'center', fontSize: 20, color: WHITE, fontWeight: 'bold'}}>Nhập 6 mã số được gửi đến số điện thoại bạn {phoneNumber}</Text>
         </View>
         <View>
         <View style={styles.containerInput}>

@@ -4,6 +4,7 @@ import { TouchableOpacity, ToastAndroid } from 'react-native';
 import { Image } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { GREEN, MAIN_COLOR, WHITE,RED } from '../asset/color';
 
@@ -48,11 +49,12 @@ const Home = ({navigation}) => {
             </TouchableOpacity>
         </View>
     </View>
+    <KeyboardAwareScrollView>
         <View>
             <View style={{width:'87%', alignSelf: 'center', marginTop: 5}}>
                 <Text style={{textAlign: 'center'}}>Theo dõi đơn hàng của bạn bằng cách quét/ nhập mã đơn hàng (Mã vận đơn).</Text>
             </View>
-                {/* <QRCodeScanner
+                <QRCodeScanner
                     reactivateTimeout={5000}
                     onRead={onScanning}
                     reactivate={true}
@@ -62,8 +64,8 @@ const Home = ({navigation}) => {
                     // cameraStyle={{ height: 400, marginTop: 20, width: 413, alignSelf: 'center', justifyContent: 'center' }}
                     cameraType={'back'}
                     cameraProps={{ ratio: '1:1'  }}
-                ></QRCodeScanner> */}
-            <View style={{marginTop: '105%'}}>
+                ></QRCodeScanner>
+            <View style={{marginTop: 10}}>
                 <View style={{alignItems: 'center', marginBottom: 10}}>
                     <Text>Hoặc</Text>
                 </View>
@@ -75,7 +77,7 @@ const Home = ({navigation}) => {
                         onChangeText={(val)=>{setQRcode(val)}}
                     ></TextInput>
                 </View>
-                <View View style={{justifyContent: 'center', width: '90%', alignSelf: 'center', marginTop:10}}>
+                <View View style={{justifyContent: 'center', width: '90%', alignSelf: 'center', marginTop:5}}>
                     <Text style={{fontStyle:'italic', color: RED}}>{showError}</Text>
                 </View>
                 <TouchableOpacity 
@@ -146,6 +148,7 @@ const Home = ({navigation}) => {
                     </SafeAreaView>
             </Modal>
         </View>
+        </KeyboardAwareScrollView>
     </SafeAreaView>
   )
 }
@@ -157,11 +160,11 @@ const styles = StyleSheet.create({
     topView:{
         borderWidth: 0,
         width: '100%',
-        height: '9%',
+        height: '9.5%',
         elevation: 1.5,
         justifyContent: 'center',
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center', 
     },
     buttonModalStyle:{
         width:'90%',
@@ -178,7 +181,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: GREEN,
         justifyContent: 'center',
-        marginTop: 15
+        marginTop: 10
         },
 })
 export default Home;

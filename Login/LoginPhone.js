@@ -1,11 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { GRAY, GREEN, MAIN_COLOR, WHITE } from '../asset/color';
+import { GRAY, GREEN, MAIN_COLOR, RED, WHITE } from '../asset/color';
 import {Hoshi} from 'react-native-textinput-effects'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 const LoginPhone = ({navigation}) => {
+  const [phoneNum, setPhoneNumber] = useState('')
+  const [showError, setShowError] = useState('');
+  const onChangePhone= (number) =>{
+    setPhoneNumber(number)
+  }
+  const onPress = () =>{
+    if(phoneNum == ''){
+      setShowError('Vui lòng nhập OTP')
+  }
+  else{
+    setShowError('')
+    navigation.navigate('OTP',{
+      phoneNumber : phoneNum
+    })
+  }
+    
+  }
   return (
     <SafeAreaView
       style={styles.container}>
+        <KeyboardAwareScrollView>
         <Image
         source={require('../img/logo.png')}
         style={styles.logo}
@@ -18,18 +37,23 @@ const LoginPhone = ({navigation}) => {
         </View>
         <View>
             <Hoshi
+                value={phoneNum}
+                onChangeText={onChangePhone}
                 label={'Số điện thoại'}
                 borderColor={WHITE}
                 borderHeight={0}
-                style={{width:'90%', alignSelf: 'center', margin: 30}}
+                style={{width:'90%', alignSelf: 'center', margin: 30,marginBottom: 15}}
                 labelStyle={{fontSize: 13, color:GRAY}}
                 keyboardType={'number-pad'}
             ></Hoshi>
         </View>
+        <View View style={{justifyContent: 'center', width: '90%', alignSelf: 'center', marginBottom: 10}}>
+            <Text style={{fontStyle:'italic', color: RED}}>{showError}</Text>
+        </View>
         <TouchableOpacity style={styles.buttonStyle}>
             <Text 
                 style={{color: WHITE, fontWeight: 'bold'}}
-                onPress={()=>{navigation.navigate('OTP')}}>TIẾP TỤC</Text>
+                onPress={onPress}>TIẾP TỤC</Text>
         </TouchableOpacity>
         <View style={{flexDirection: 'row', width: '90%', alignSelf: 'center', margin: 30}}>
             <View style={{backgroundColor: GRAY, height: 0.5, flex: 1, alignSelf: 'center'}} />
@@ -46,6 +70,7 @@ const LoginPhone = ({navigation}) => {
                 <Text style={{margin: 10}}>Google</Text>
             </TouchableOpacity>
         </View>
+        </KeyboardAwareScrollView>
     </SafeAreaView>
   )
 }
