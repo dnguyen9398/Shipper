@@ -50,10 +50,12 @@ const LoginPhone = ({navigation}) => {
         <View View style={{justifyContent: 'center', width: '90%', alignSelf: 'center', marginBottom: 10}}>
             <Text style={{fontStyle:'italic', color: RED}}>{showError}</Text>
         </View>
-        <TouchableOpacity style={styles.buttonStyle}>
+        <TouchableOpacity 
+          style={styles.buttonStyle}
+          onPress={onPress}>
             <Text 
                 style={{color: WHITE, fontWeight: 'bold'}}
-                onPress={onPress}>TIẾP TỤC</Text>
+                >TIẾP TỤC</Text>
         </TouchableOpacity>
         <View style={{flexDirection: 'row', width: '90%', alignSelf: 'center', margin: 30}}>
             <View style={{backgroundColor: GRAY, height: 0.5, flex: 1, alignSelf: 'center'}} />

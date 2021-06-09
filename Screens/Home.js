@@ -44,7 +44,8 @@ const Home = ({navigation}) => {
             <TouchableOpacity style={{flex: 2,paddingRight: 20}}>
                 <Image source={require('../img/mailvector.png')}></Image>
             </TouchableOpacity>
-            <TouchableOpacity style={{flex: 2, paddingRight: 20}}>
+            <TouchableOpacity style={{flex: 2, paddingRight: 20}}
+                onPress={()=>navigation.navigate('Order')}>
                 <Image source={require('../img/notivector.png')}></Image>
             </TouchableOpacity>
         </View>

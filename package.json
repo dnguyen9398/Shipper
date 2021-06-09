@@ -22,10 +22,13 @@
     "react-native-gesture-handler": "^1.10.3",
     "react-native-indicators": "^0.17.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.4",
+    "react-native-paper": "^4.9.1",
     "react-native-qrcode-scanner": "^1.5.4",
+    "react-native-radio-buttons-group": "^2.2.4",
     "react-native-reanimated": "^2.1.0",
     "react-native-safe-area-context": "^3.2.0",
     "react-native-screens": "^3.1.1",
+    "react-native-simple-radio-button": "^2.7.4",
     "react-native-svg": "^12.1.1",
     "react-native-textinput-effects": "^0.6.1"
   },

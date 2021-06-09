@@ -1,24 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, SafeAreaView, Modal, Linking, TextInput} from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, SafeAreaView, Modal} from 'react-native';
 import Barcode from '@kichiyaki/react-native-barcode-generator'
 import { GRAY, GREEN, WHITE, ORANGE } from '../asset/color';
 import DashedLine from 'react-native-dashed-line';
 import { data } from '../asset/datasample';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import RadioForm from 'react-native-simple-radio-button';
-import { ToastAndroid } from 'react-native';
-
-const Info = ({navigation}) => {
+const InfoSuccess = ({navigation}) => {
     const [twoButton, setTwoButton] = useState(false)
-    const [sentsuccess, setSentSuccess] = useState(false)
-    const [Sentfail, setSentFail] = useState(false)
-    const [confirm, setConfirm] = useState(false)
-    const [deny, setDeny] = useState(false)
-    const [radioButtons, setRadioButtons] = useState('')
-
-    const onPressRadioButton = (value) => {
-        ToastAndroid.show(value, ToastAndroid.SHORT)
-    }
     const BarcodeItem = (item) =>{
         return(
             <Barcode 
@@ -27,9 +14,6 @@ const Info = ({navigation}) => {
             text={item.id}
             textStyle={{marginTop: 14, fontSize: 20, fontWeight: 'bold', marginBottom: 10}}/>
         )
-    }
-    const onConfirm = () =>{
-        navigation.navigate('Success')
     }
     const StatusItem = ({item}) => {
         return(
@@ -60,7 +44,7 @@ const Info = ({navigation}) => {
             </View>
         )
     }
-    const SentInfo = (item) =>{
+    const SentInfo = ({item}) =>{
         return(
             <View>
                 <View style={styles.titleContent}>
@@ -72,10 +56,8 @@ const Info = ({navigation}) => {
                             <Text style={styles.textTitle}>Số điện thoại</Text>
                         </View>
                         <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                            <TouchableOpacity 
-                            style={{flexDirection: 'row', backgroundColor: GREEN,alignItems: 'center', paddingLeft: 20, paddingRight: 10, padding: 2, borderRadius: 4}}
-                            onPress={()=>{Linking.openURL(`tel:${item.tel}`)}}>
-                                <Text style={{fontWeight: 'bold', color: WHITE, marginRight: 10}}>{item.tel}</Text>
+                            <TouchableOpacity style={{flexDirection: 'row', backgroundColor: GREEN,alignItems: 'center', paddingLeft: 20, paddingRight: 10, padding: 2, borderRadius: 4}}>
+                                <Text style={{fontWeight: 'bold', color: WHITE, marginRight: 10}}>0933265539</Text>
                                 <Image source={require('../img/phongvector.png')}></Image>
                             </TouchableOpacity>
                         </View>
@@ -105,7 +87,7 @@ const Info = ({navigation}) => {
             </View>
         )
     }
-    const ProductInfo = (item) =>{
+    const ProductInfo = ({item}) =>{
         return(
         <View>
             <View style={styles.titleContent}>
@@ -180,7 +162,7 @@ const Info = ({navigation}) => {
         </View>
         )
     }
-    const RecieveInfo = (item) =>{
+    const RecieveInfo = ({item}) =>{
         return(
             <View>
                 <View style={styles.titleContent}>
@@ -192,9 +174,7 @@ const Info = ({navigation}) => {
                             <Text style={styles.textTitle}>Số điện thoại</Text>
                         </View>
                         <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                            <TouchableOpacity 
-                                style={{flexDirection: 'row', backgroundColor: GREEN,alignItems: 'center', paddingLeft: 20, paddingRight: 10, padding: 2, borderRadius: 4}}
-                                onPress={()=>{Linking.openURL(`tel:${item.tel}`)}}>
+                            <TouchableOpacity style={{flexDirection: 'row', backgroundColor: GREEN,alignItems: 'center', paddingLeft: 20, paddingRight: 10, padding: 2, borderRadius: 4}}>
                                 <Text style={{fontWeight: 'bold', color: WHITE, marginRight: 10}}>0933265539</Text>
                                 <Image source={require('../img/phongvector.png')}></Image>
                             </TouchableOpacity>
@@ -228,35 +208,11 @@ const Info = ({navigation}) => {
     const BottomButton = () =>{
         return(
             <View>
-                {
-                    twoButton ?
-                <View>
-                    <TouchableOpacity style={styles.buttonStyle}
-                        onPress={()=>setSentSuccess(true)}>
-                        <Text style={{color: WHITE, fontWeight:'bold'}}>
-                            GIAO THÀNH CÔNG
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.buttonStyle2}
-                        onPress={()=>setSentFail(true)}>
-                        <Text style={{color: WHITE, fontWeight:'bold'}}>
-                            GIAO KHÔNG THÀNH CÔNG
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-                :
-                <View>
-                    <TouchableOpacity style={styles.buttonStyle}
-                                onPress={()=>{setConfirm(true)}}>
-                        <Text style={{color: WHITE, fontWeight:'bold'}}>NHẬN ĐƠN HÀNG</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        onPress={()=>setDeny(true)}
-                        style={styles.buttonStyle2}>
-                        <Text style={{color: WHITE, fontWeight:'bold'}}>TỪ CHỐI NHẬN ĐƠN HÀNG</Text>
-                    </TouchableOpacity>
-                </View> 
-                }  
+                <TouchableOpacity style={styles.buttonStyle}
+                            onPress={()=>{navigation.navigate('Home')}}>
+                    <Text style={{color: WHITE, fontWeight:'bold'}}>VỀ TRANG CHỦ</Text>
+                    <Image source={require('../img/homevector.png')} style={{marginLeft: 10}}></Image>
+                </TouchableOpacity>
             </View>
             
         )
@@ -276,11 +232,6 @@ const Info = ({navigation}) => {
     return (
     <SafeAreaView style={styles.container}>
         <View style={styles.topView}>
-            <TouchableOpacity 
-                style={{borderWidth: 0, left: 0, position: 'absolute', marginLeft: 15}}
-                onPress={()=>{navigation.goBack()}}>
-                <Image source={require('../img/arrow.png')}></Image>
-            </TouchableOpacity>
             <View style={{borderWidth: 0,flexDirection: 'row', position: 'absolute', right: 0}}>
                 <TouchableOpacity style={{flex: 2, paddingRight: 20}}
                     onPress={()=>navigation.navigate('Order')}>
@@ -301,184 +252,6 @@ const Info = ({navigation}) => {
             data={data}
             renderItem={(item)=>ListItem(item)}
         ></FlatList>
-        <Modal
-            visible={sentsuccess}
-            transparent={true}
-            animationType={'slide'}>
-            <SafeAreaView style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                <View
-                    style={{backgroundColor: WHITE, width: 312, height: 295, alignItems: 'center', elevation: 12}}>
-                    <Image
-                        style={{marginTop: 30}}
-                        source={require('../img/package.png')}
-                    ></Image>
-                    <View style={{alignItems: 'center', marginTop: 20, width:'70%', alignSelf: 'center'}}>
-                        <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>
-                            Xác nhận giao hàng thành công!                        
-                        </Text>
-                    </View>
-                    <View style={{flexDirection: 'row',flex: 1}}>
-                        <TouchableOpacity
-                            onPress={()=>{setSentSuccess(false)}}
-                            style={styles.buttonModalStyle}>
-                                <Text 
-                                    style={{color: '#000000', fontSize: 18}}>
-                                    ĐÓNG
-                                </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.buttonModalStyle}
-                            onPress={()=>{onConfirm()}}>
-                                <Text 
-                                    style={{color: GREEN, fontWeight: 'bold', fontSize: 18}}>
-                                    XÁC NHẬN
-                                </Text>
-                        </TouchableOpacity>
-                    </View>
-                    
-                </View>
-            </SafeAreaView>
-        </Modal>
-        <Modal
-            visible={Sentfail}
-            transparent={true}
-            animationType={'slide'}>
-            <SafeAreaView style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                <View
-                    style={{backgroundColor: WHITE, width: 312, height: 295, alignItems: 'center', elevation: 12}}>
-                    <Image
-                        style={{marginTop: 30}}
-                        source={require('../img/packagefail.png')}
-                    ></Image>
-                    <View style={{alignItems: 'center', marginTop: 20, width:'90%', alignSelf: 'center'}}>
-                        <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>
-                        Giao hàng không thành công.
-                        Xác nhận để hoàn hàng lại?                        
-                        </Text>
-                    </View>
-                    <View style={{flexDirection: 'row',flex: 1}}>
-                        <TouchableOpacity
-                            onPress={()=>{setSentFail(false)}}
-                            style={styles.buttonModalStyle}>
-                                <Text 
-                                    style={{color: '#000000', fontSize: 18}}>
-                                    ĐÓNG
-                                </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={()=>{navigation.navigate('Fail')}}
-                            style={styles.buttonModalStyle}>
-                                <Text 
-                                    style={{color: GREEN, fontWeight: 'bold', fontSize: 18}}>
-                                    XÁC NHẬN
-                                </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </SafeAreaView>
-        </Modal>
-        <Modal
-            visible={confirm}
-            transparent={true}
-            animationType={'slide'}>
-            <SafeAreaView style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                <View
-                    style={{backgroundColor: WHITE, width: 312, height: 295, alignItems: 'center', elevation: 12}}>
-                    <Image
-                        style={{marginTop: 30}}
-                        source={require('../img/nonepackage.png')}
-                    ></Image>
-                    <View style={{alignItems: 'center', marginTop: 20, width:'70%', alignSelf: 'center'}}>
-                        <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>
-                            Xác nhận nhận đơn hàng thành công!                        
-                        </Text>
-                    </View>
-                    <View style={{flexDirection: 'row',flex: 1}}>
-                        <TouchableOpacity
-                            onPress={()=>{setConfirm(false)}}
-                            style={styles.buttonModalStyle}>
-                                <Text 
-                                    style={{color: '#000000', fontSize: 18}}>
-                                    ĐÓNG
-                                </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.buttonModalStyle}
-                            onPress={()=>{setTwoButton(true), setConfirm(false)}}>
-                                <Text 
-                                    style={{color: GREEN, fontWeight: 'bold', fontSize: 18}}>
-                                    XÁC NHẬN
-                                </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </SafeAreaView>
-        </Modal>
-        <Modal
-            visible={deny}
-            transparent={true}
-            animationType={'slide'}>
-            <SafeAreaView style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                <View
-                    style={{backgroundColor: WHITE, width: 312, height: 430, alignItems: 'center', elevation: 12}}>
-                    <View style={{alignItems: 'center', marginTop: 10, width:'70%', alignSelf: 'center'}}>
-                        <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>
-                            Từ chối nhận đơn hàng!                        
-                        </Text>
-                    </View>
-                    <Image
-                        style={{marginTop: 30}}
-                        source={require('../img/packagefail.png')}
-                    ></Image>
-                    <View style={{marginTop: 20, alignSelf: 'flex-start', marginLeft: 20}}>
-                        <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>
-                            Lý do:                        
-                        </Text>
-                    </View>
-                    <View style={{width: '90%', marginTop: 10, marginBottom: 15}}>
-                        <RadioForm
-                            radio_props={[{
-                                label: 'Hàng bị hư hỏng',
-                                value: 'Hàng bị hư hỏng'
-                            }, {
-                                label: 'Khách không nhận hàng',
-                                value: 'Khách không nhận hàng'
-                            },{
-                                label:'Khách hẹn giao lại',
-                                value: 'Khách hẹn giao lại'
-                            },{
-                                label: 'Khác',
-                                value: 'Khác'
-                            }]}
-                            buttonSize={10}
-                            buttonColor={'#000000'}
-                            onPress={onPressRadioButton}
-                            selectedButtonColor={GREEN}
-                            selectedLabelColor={GREEN}
-                            labelStyle={{fontSize: 16}}>
-                       </RadioForm>
-                    </View>
-                    <View style={{flexDirection: 'row',marginBottom: 10}}>
-                        <TouchableOpacity
-                            onPress={()=>{setDeny(false)}}
-                            style={styles.buttonModalStyle}>
-                                <Text 
-                                    style={{color: '#000000', fontSize: 18}}>
-                                    ĐÓNG
-                                </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.buttonModalStyle}>
-                                <Text 
-                                    style={{color: GREEN, fontWeight: 'bold', fontSize: 18}}
-                                    onPress={()=>navigation.navigate('Home')}>
-                                    XÁC NHẬN
-                                </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </SafeAreaView>
-        </Modal>
     </SafeAreaView>
   );
 }
@@ -514,7 +287,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: GREEN,
         justifyContent: 'center',
-        marginBottom: 15
+        marginBottom: 15,
+        flexDirection: 'row'
     },  
     buttonModalStyle:{
         alignSelf: 'center',
@@ -524,14 +298,5 @@ const styles = StyleSheet.create({
         borderWidth: 0,
         flex: 1
     },
-    buttonStyle2:{
-        height: 50,
-        width:'90%',
-        alignSelf: 'center',
-        alignItems: 'center',
-        backgroundColor: ORANGE,
-        justifyContent: 'center',
-        marginBottom: 15
-    },  
 })
-export default Info;
+export default InfoSuccess;
