@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@kichiyaki/react-native-barcode-generator": "^0.6.7",
+    "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/native": "^5.9.4",
     "@react-navigation/stack": "^5.14.5",
@@ -23,6 +24,7 @@
     "react-native-indicators": "^0.17.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.4",
     "react-native-paper": "^4.9.1",
+    "react-native-popup-menu": "^0.15.11",
     "react-native-qrcode-scanner": "^1.5.4",
     "react-native-radio-buttons-group": "^2.2.4",
     "react-native-reanimated": "^2.1.0",
@@ -30,7 +32,9 @@
     "react-native-screens": "^3.1.1",
     "react-native-simple-radio-button": "^2.7.4",
     "react-native-svg": "^12.1.1",
-    "react-native-textinput-effects": "^0.6.1"
+    "react-native-textinput-effects": "^0.6.1",
+    "react-redux": "^7.2.4",
+    "redux": "^4.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

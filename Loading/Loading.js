@@ -5,8 +5,7 @@ import { StyleSheet } from 'react-native';
 import { Text, View } from 'react-native';
 import { MAIN_COLOR, WHITE } from '../asset/color';
 import {UIActivityIndicator } from 'react-native-indicators'
-
-const Loading = ({navigation}) => {
+const Loading = ({navigation, route}) => {
     useEffect(()=>{
         setTimeout(()=>{
             navigation.navigate('Home')
@@ -30,7 +29,7 @@ const Loading = ({navigation}) => {
                 <View style={{borderWidth: 0, position: 'absolute', right: 0}}>
                     <Text style={{fontSize: 16, color: WHITE}}>ver.0.1.1</Text>
                 </View>
-            </View>        
+            </View>
         </SafeAreaView>
   )
 }

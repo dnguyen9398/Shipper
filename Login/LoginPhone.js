@@ -3,24 +3,75 @@ import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'r
 import { GRAY, GREEN, MAIN_COLOR, RED, WHITE } from '../asset/color';
 import {Hoshi} from 'react-native-textinput-effects'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { asyncPOST, SERVER_ADDRESS, _storedata } from '../global/func';
+import { ToastAndroid } from 'react-native';
+import { Alert } from 'react-native';
+import OTP from './OTP';
+import { useDispatch } from 'react-redux';
+import { STORE_MEMBER, STORE_OTP } from '../redux/action';
 const LoginPhone = ({navigation}) => {
   const [phoneNum, setPhoneNumber] = useState('')
   const [showError, setShowError] = useState('');
+  const dispatch = useDispatch()
   const onChangePhone= (number) =>{
     setPhoneNumber(number)
   }
   const onPress = () =>{
     if(phoneNum == ''){
-      setShowError('Vui lòng nhập OTP')
+      setShowError('Vui lòng nhập số điện thoại')
   }
   else{
-    setShowError('')
-    navigation.navigate('OTP',{
-      phoneNumber : phoneNum
+    if(phoneNum.length != 10 )
+    {
+      setShowError('Không đúng số điện thoại')
+    }
+    else{ 
+      setShowError('')
+      SignIn()}  
+    } 
+  }
+  const SignIn = async() => {
+    var obj = {
+      "phone": phoneNum
+    }
+    asyncPOST("api/login",obj).then((res) => {
+      if(res.Status = 200){
+        if(res.errors == 'The phone format is invalid.')
+        {
+          setShowError('Không đúng số điện thoại')
+          console.log('Lỗi format SĐT')
+        }
+        else if(res.message == 'User does not exist')
+        {
+          setShowError('Không tìm thấy số điện thoại')
+          console.log('Không tìm thấy số điện thoại')
+        }
+        else{
+          navigation.navigate('OTP',{
+            phoneNumber : phoneNum,
+            phoneOTP : JSON.stringify(res.OTP),
+            })
+            console.log(res)
+            dispatch(STORE_MEMBER(res.phone))
+            dispatch(STORE_OTP(res.otp))
+            _storedata([['StorePhone', res.phone],['StoreOTP',JSON.stringify(res.otp)]])
+            console.log(res)
+            Alert.alert('Mã OTP của bạn là:', JSON.stringify(res.otp), [
+              {
+                text: 'OK'
+              }
+            ], {
+              cancelable:false
+            })
+          }
+        }
+      else{
+        ToastAndroid.show('Lỗi',ToastAndroid.TOP)
+      }
     })
-  }
-    
-  }
+    }
+
+  
   return (
     <SafeAreaView
       style={styles.container}>

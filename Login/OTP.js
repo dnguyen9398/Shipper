@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import { TouchableOpacity } from 'react-native';
@@ -7,12 +8,13 @@ import { TextInput } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { Text, View } from 'react-native';
 import { GRAY, GREEN, MAIN_COLOR, WHITE,ORANGE, RED } from '../asset/color';
+import { asyncPOST } from '../global/func';
 
 const OTP = ({route,navigation}) => {
   let textInput = useRef(null)
   const {phoneNumber} = route.params;
   const [internalVal, setInternalVal] = useState("")
-  const lengthInput = 6;
+  const lengthInput = 4;
   const [showError, setShowError] = useState('');
   const onChangeText = (val) => {
     setInternalVal(val)
@@ -35,20 +37,37 @@ const OTP = ({route,navigation}) => {
 }
   const onConfirm = () =>{
     if(internalVal.length == lengthInput){
-      if(internalVal === '123456')
-      {
-        ToastAndroid.show('Đăng Nhập Thành Công', ToastAndroid.SHORT)
-        Keyboard.dismiss()
-        navigation.navigate('Loading')
-      }
-      else{
-        setShowError('Mã OTP không đúng')
-      }
+      VerifyOTP()
     }
     else{
       setShowError('Vui lòng nhập mã OTP')
     }
   }
+  const VerifyOTP = async() => {
+    var obj = {
+      "phone": phoneNumber,
+      "otp" : internalVal,
+    }
+    asyncPOST("api/verify",obj).then((res) => {
+      if(res.Status = 200){
+        if(res.message == "successful"){
+          Keyboard.dismiss()
+          navigation.navigate('Loading')
+          console.log(res)
+          AsyncStorage.setItem('token',res.token)
+          
+          // alert(AsyncStorage.getItem('token'))
+        }
+        else{
+          setShowError('Mã OTP không đúng')
+          console.log(res)
+        }
+      }
+      else{
+        console.log(res)
+      }
+    })
+    }
   return (
       <SafeAreaView style={styles.container}>
         <TouchableOpacity 

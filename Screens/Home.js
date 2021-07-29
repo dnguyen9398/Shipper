@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import { Modal, SafeAreaView, TextInput } from 'react-native';
 import { TouchableOpacity, ToastAndroid } from 'react-native';
@@ -5,34 +6,56 @@ import { Image } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Menu, MenuOption, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { GREEN, MAIN_COLOR, WHITE,RED } from '../asset/color';
+import { asyncGET } from '../global/func';
 
-const Home = ({navigation}) => {
+const Home = ({navigation, route}) => {
     const [QRcode, setQRcode] = useState('')
     const [showError, setShowError] = useState('');
-
+    const [openMenu, setOpenMenu] = useState(false)
+    // var token = AsyncStorage.getItem('token')
+    const GetOrderByCode = () =>{
+        asyncGET(`api/search/${QRcode}`).then((res) =>{
+            if (res.Status = 200) {
+                if(res.message == 'No result match')
+                {
+                    SetNotFound(true)
+                }
+                else{
+                    setShowError('')
+                    navigation.navigate('Info', {
+                        BarcodeValue : QRcode,
+                        ProductID : res[0].id
+                    })
+                    ToastAndroid.show('Tìm thành công', ToastAndroid.SHORT)
+                    console.log(res[0].id)
+                }
+            }
+            else {
+                SetNotFound(true)
+                console.log(res)
+            } 
+        })
+    }
     const onScanning = e =>{
         setQRcode(e.data)
     }
     const onConfirm = () =>{
         if(QRcode==''){
-            setShowError('Vui lòng nhập OTP')
+            setShowError('Vui lòng nhập')
         }
         else{
-            setShowError('')
-            if(QRcode == '123456')
-            {
-                navigation.navigate('Info')
-                ToastAndroid.show('Tìm thành công', ToastAndroid.SHORT)
-            }
-            else{
-                SetNotFound(true)
-            }
+            GetOrderByCode()
         }
     }
     const [showSuggest, setShowSuggest] = useState(false)
     const [notFound, SetNotFound] = useState(false)
+    const onPressMenu=()=>{
+        navigation.navigate('LoginPhone')
+        setOpenMenu(false)
+    }
   return (
     <SafeAreaView
       style={styles.container}>
@@ -40,7 +63,12 @@ const Home = ({navigation}) => {
         <View style={{borderWidth: 0,}}>
             <Image source={require('../img/logosmall.png')}></Image>
         </View>
+        <TouchableOpacity style={{borderWidth: 0, left: 0, position: 'absolute', marginTop: 15, padding:20}}
+                onPress={()=>{setOpenMenu(true)}}>
+                <Image source={require('../img/Menu.png')} style={{tintColor: 'black'}}></Image>
+            </TouchableOpacity>
         <View style={{borderWidth: 0,flexDirection: 'row', alignSelf: 'center', position: 'absolute', right: 0, justifyContent: 'space-between',flex: 2}}>
+            
             <TouchableOpacity style={{flex: 2,paddingRight: 20}}>
                 <Image source={require('../img/mailvector.png')}></Image>
             </TouchableOpacity>
@@ -50,6 +78,15 @@ const Home = ({navigation}) => {
             </TouchableOpacity>
         </View>
     </View>
+    <Menu opened={openMenu} onBackdropPress={()=>{setOpenMenu(false)}}>
+        <MenuTrigger></MenuTrigger>
+        <MenuOptions>
+            <MenuOption onSelect={()=>onPressMenu()} style={{flexDirection: 'row', alignItems: 'center', elevation: 12}}>
+                <Text style={{fontSize: 18, fontWeight:'bold', flex: 1}}>Đăng Xuất</Text>
+                <Image source={require('../img/LogOut.png')} width={15} height={15}></Image>
+            </MenuOption>
+        </MenuOptions>
+    </Menu>
     <KeyboardAwareScrollView>
         <View>
             <View style={{width:'87%', alignSelf: 'center', marginTop: 5}}>
@@ -69,6 +106,7 @@ const Home = ({navigation}) => {
             <View style={{marginTop: 10}}>
                 <View style={{alignItems: 'center', marginBottom: 10}}>
                     <Text>Hoặc</Text>
+                    {/* <Text>{JSON.stringify(token)}</Text> */}
                 </View>
                 <View>
                     <TextInput
@@ -89,6 +127,7 @@ const Home = ({navigation}) => {
                         TÌM MÃ ĐƠN HÀNG
                     </Text>
                 </TouchableOpacity>
+                {/* <Text>{authToken}</Text> */}
                 <TouchableOpacity style={{alignSelf: 'center', marginTop: 15}}
                     onPress={()=>{setShowSuggest(true)}}>
                     <Text style={{textDecorationLine:'underline', color:'#828282'}}>Gợi ý cách tìm mã đơn hàng?</Text>

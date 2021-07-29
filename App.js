@@ -12,12 +12,18 @@ import Info from './Screens/Info';
 import InfoSuccess from './Screens/InfoSuccess';
 import InfoFail from './Screens/InfoFail';
 import Orders from './Screens/Orders';
+import OrdersDetail from './Screens/OrdersDetail';
+import { Provider } from 'react-redux';
+import store from './redux/store';
+import { MenuProvider } from 'react-native-popup-menu';
+
 const App = () => {
   const Stack = createStackNavigator()
   return (
+    <Provider store={store}>
+      <MenuProvider>
       <NavigationContainer>
         <Stack.Navigator 
-          
           screenOptions={{cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS}}>
         <Stack.Screen 
             name='Splash' component={Splash}
@@ -55,8 +61,14 @@ const App = () => {
             name='Order' component={Orders}
             options={{headerShown: false}}
           ></Stack.Screen>
+          <Stack.Screen
+            name='OrderDetail' component={OrdersDetail}
+            options={{headerShown: false}}
+          ></Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
+      </MenuProvider>
+      </Provider>
     )
 }
 export default App;

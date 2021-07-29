@@ -4,18 +4,51 @@ import Barcode from '@kichiyaki/react-native-barcode-generator'
 import { GRAY, GREEN, WHITE, ORANGE } from '../asset/color';
 import DashedLine from 'react-native-dashed-line';
 import { data } from '../asset/datasample';
-const InfoSuccess = ({navigation}) => {
+import { useEffect } from 'react';
+import { asyncGET } from '../global/func';
+import { ToastAndroid } from 'react-native';
+import { getStatus } from '../global/status';
+const InfoSuccess = ({navigation,route}) => {
     const [twoButton, setTwoButton] = useState(false)
+    const [data,setData] = useState()
+    const {BarcodeValue} = route.params;
+
+    useEffect(()=>{
+        getData();
+      },[]);
+    const getData = () => {
+        ordersData()
+    }
+    const ordersData = () => {
+        asyncGET(`api/search/${BarcodeValue}`).then((res) => {
+            if(res.Status = 200)
+            {
+                setData(res)
+                console.log(res)
+            }
+            else{
+                if(res.Status == 500)
+                {
+                  ToastAndroid.showWithGravity('lỗi',ToastAndroid.SHORT,ToastAndroid.BOTTOM)
+                  console.log(res)
+                } else{
+                  ToastAndroid.showWithGravity('lỗi data',ToastAndroid.SHORT,ToastAndroid.BOTTOM)
+                  console.log(res)
+                }
+              }
+        })
+    }
     const BarcodeItem = (item) =>{
         return(
             <Barcode 
             style={{marginTop: 20}}
-            format={'CODE128'} value={item.id}
-            text={item.id}
+            format={'CODE128'} value={BarcodeValue}
+            text={BarcodeValue}
             textStyle={{marginTop: 14, fontSize: 20, fontWeight: 'bold', marginBottom: 10}}/>
         )
     }
-    const StatusItem = ({item}) => {
+
+    const StatusItem = (item) => {
         return(
             <View>
                 <View style={styles.titleContent}>
@@ -44,7 +77,7 @@ const InfoSuccess = ({navigation}) => {
             </View>
         )
     }
-    const SentInfo = ({item}) =>{
+    const SentInfo = (item) =>{
         return(
             <View>
                 <View style={styles.titleContent}>
@@ -57,17 +90,17 @@ const InfoSuccess = ({navigation}) => {
                         </View>
                         <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
                             <TouchableOpacity style={{flexDirection: 'row', backgroundColor: GREEN,alignItems: 'center', paddingLeft: 20, paddingRight: 10, padding: 2, borderRadius: 4}}>
-                                <Text style={{fontWeight: 'bold', color: WHITE, marginRight: 10}}>0933265539</Text>
+                                <Text style={{fontWeight: 'bold', color: WHITE, marginRight: 10}}>{item.sendermobile}</Text>
                                 <Image source={require('../img/phongvector.png')}></Image>
                             </TouchableOpacity>
                         </View>
                     </View>
                     <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
                         <View style={{borderWidth: 0, flex: 1,}}>
-                            <Text style={styles.textTitle}>Họ và tên </Text>
+                            <Text style={styles.textTitle}>Họ và tên</Text>
                         </View>
                         <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                            <Text>Nguyễn Văn A</Text>
+                            <Text>{item.sender}</Text>
                         </View>
                     </View>
                     <View style={{flexDirection: 'column',borderBottomWidth: 0.2, padding: 20, }}>
@@ -76,7 +109,7 @@ const InfoSuccess = ({navigation}) => {
                         </View>
                         <View style={{borderWidth: 0,  alignItems: 'flex-start', flexDirection: 'row'}}>
                             <View style={{width: '90%'}}>
-                                <Text>13/ 249A Lê Đức Thọ, Phường 12, Q. Gò Vấp </Text>
+                                <Text>{item.senderaddress}</Text>
                             </View>
                             <View style={{alignItems: 'flex-end', flex: 1, borderWidth: 0, alignSelf: 'center'}}>
                                 <Image source={require('../img/placevector.png')}></Image>
@@ -87,7 +120,7 @@ const InfoSuccess = ({navigation}) => {
             </View>
         )
     }
-    const ProductInfo = ({item}) =>{
+    const ProductInfo = (item) =>{
         return(
         <View>
             <View style={styles.titleContent}>
@@ -99,7 +132,7 @@ const InfoSuccess = ({navigation}) => {
                         <Text style={styles.textTitle}>Trạng thái</Text>
                     </View>
                     <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                        <Text>Thu tiền mặt</Text>
+                        <Text>{getStatus(item)}</Text>
                     </View>
                 </View>
                 <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
@@ -107,7 +140,7 @@ const InfoSuccess = ({navigation}) => {
                         <Text style={styles.textTitle}>Tổng tiền thu</Text>
                     </View>
                     <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                        <Text>200000</Text>
+                        <Text>{item.cod}</Text>
                     </View>
                 </View>
                 <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
@@ -131,7 +164,7 @@ const InfoSuccess = ({navigation}) => {
                         <Text style={styles.textTitle}>Hình thức thanh toán</Text>
                     </View>
                     <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                        <Text>Người gửi gửi tiền</Text>
+                        <Text>{item.isSenderPayment}</Text>
                     </View>
                 </View>
                 <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
@@ -139,7 +172,7 @@ const InfoSuccess = ({navigation}) => {
                         <Text style={styles.textTitle}>Phí thu hộ (COD)</Text>
                     </View>
                     <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                        <Text>Có</Text>
+                        <Text>{item.price}</Text>
                     </View>
                 </View>
                 <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
@@ -147,10 +180,10 @@ const InfoSuccess = ({navigation}) => {
                         <Text style={styles.textTitle}>Hình thức vận chuyển</Text>
                     </View>
                     <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                        <Text>Giao hàng trong 6 tiếng</Text>
+                        <Text>{item.Methodtrans}</Text>
                     </View>
                 </View>
-                <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
+                <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, alignItems:'center'}}>
                     <View style={{borderWidth: 0, flex: 1,}}>
                         <Text style={styles.textTitle}>Chỉ dẫn của người gửi/ chủ hàng khi không phát được vật phẩm:</Text>
                     </View>
@@ -162,11 +195,11 @@ const InfoSuccess = ({navigation}) => {
         </View>
         )
     }
-    const RecieveInfo = ({item}) =>{
+    const RecieveInfo = (item) =>{
         return(
             <View>
                 <View style={styles.titleContent}>
-                    <Text style={{fontSize: 14, color: GRAY, fontWeight: 'bold'}}>Thông tin người gửi</Text>
+                    <Text style={{fontSize: 14, color: GRAY, fontWeight: 'bold'}}>Thông tin người nhận</Text>
                 </View>
                 <View style={{flexDirection: 'column', }}>
                     <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
@@ -175,17 +208,17 @@ const InfoSuccess = ({navigation}) => {
                         </View>
                         <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
                             <TouchableOpacity style={{flexDirection: 'row', backgroundColor: GREEN,alignItems: 'center', paddingLeft: 20, paddingRight: 10, padding: 2, borderRadius: 4}}>
-                                <Text style={{fontWeight: 'bold', color: WHITE, marginRight: 10}}>0933265539</Text>
+                                <Text style={{fontWeight: 'bold', color: WHITE, marginRight: 10}}>{item.customermobile}</Text>
                                 <Image source={require('../img/phongvector.png')}></Image>
                             </TouchableOpacity>
                         </View>
                     </View>
                     <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
                         <View style={{borderWidth: 0, flex: 1,}}>
-                            <Text style={styles.textTitle}>Họ và tên </Text>
+                            <Text style={styles.textTitle}>Họ và tên</Text>
                         </View>
                         <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                            <Text>Nguyễn Văn B</Text>
+                            <Text>{item.customer}</Text>
                         </View>
                     </View>
                     <View style={{flexDirection: 'column',borderBottomWidth: 0.2, padding: 20, }}>
@@ -194,7 +227,7 @@ const InfoSuccess = ({navigation}) => {
                         </View>
                         <View style={{borderWidth: 0,  alignItems: 'flex-start', flexDirection: 'row',}}>
                             <View style={{width: '90%'}}>
-                                <Text>25 Nguyễn Bỉnh Khiêm, Khu 3, Phường 2, Tp. Bảo Lộc, Lâm Đồng</Text>
+                                <Text>{item.customeraddress}</Text>
                             </View>
                             <View style={{alignItems: 'flex-end', flex: 1, borderWidth: 0, alignSelf: 'center'}}>
                                 <Image source={require('../img/placevector.png')}></Image>
@@ -242,12 +275,6 @@ const InfoSuccess = ({navigation}) => {
                 <Text style={{fontSize: 20}}>Thông tin đơn hàng</Text>
             </View>
         </View>
-                
-        {/* <StatusItem></StatusItem>
-        <SentInfo></SentInfo>
-        <ProductInfo></ProductInfo>
-        <RecieveInfo></RecieveInfo> */}
-            {/* <MainList></MainList> */}
         <FlatList
             data={data}
             renderItem={(item)=>ListItem(item)}

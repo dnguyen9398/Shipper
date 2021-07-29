@@ -1,29 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, SafeAreaView, Modal} from 'react-native';
 import Barcode from '@kichiyaki/react-native-barcode-generator'
-import { GRAY, GREEN, WHITE, ORANGE, BLUE } from '../asset/color';
+import { GRAY, GREEN, WHITE, ORANGE } from '../asset/color';
 import DashedLine from 'react-native-dashed-line';
-import { asyncGET, asyncPOST } from '../global/func';
-import { ToastAndroid } from 'react-native';
-import { getStatus } from '../global/status';
-const InfoFail = ({navigation, route}) => {
+import { data } from '../asset/datasample';
+import { asyncGET } from '../global/func';
+import { useEffect } from 'react';
+import { getStatus, status1, status2, status3, status4, status5, status6, status7, status8 } from '../global/status';
+const OrdersDetail = ({navigation, route}) => {
+    const {OrderID} = route.params;
     const [twoButton, setTwoButton] = useState(false)
-    const [success, setSuccess] = useState(false)
-    const [fail, setFail] = useState(false)
-    const {BarcodeValue, ProductID} = route.params;
-    const [data,setData] = useState()
+    const [data, setData] = useState()
     useEffect(()=>{
         getData();
-      },[]);
+      },[])
     const getData = () => {
         ordersData()
     }
+    
+    const BarcodeItem = (item) =>{
+        return(
+            <Barcode 
+            style={{marginTop: 20}}
+            format={'CODE128'} value={'CHANH8_00000002ABC'}
+            textStyle={{marginTop: 14, fontSize: 20, fontWeight: 'bold', marginBottom: 10}}/>
+        )
+    }
     const ordersData = () => {
-        asyncGET(`api/search/${BarcodeValue}`).then((res) => {
+        asyncGET('api/getlistorder').then((res) => {
             if(res.Status = 200)
             {
-                setData(res)
-                console.log(res)
+                var value = (res).filter(function(res){
+                    return res.id == OrderID
+                })
+                setData(value)
+                console.log(value)
             }
             else{
                 if(res.Status == 500)
@@ -37,40 +48,13 @@ const InfoFail = ({navigation, route}) => {
               }
         })
     }
-    const onConfirm = () => {
-        ChangeStatus(8)
-        navigation.navigate('Success',{
-            BarcodeValue : BarcodeValue
-        })
-    }
-    const ChangeStatus = async(status) => {
-        var obj = {
-            "Status" : status,
-        }
-        asyncPOST(`api/updateStatus/${ProductID}`,obj).then((res)=>{
-            if(res.Status = 200)
-            {
-                console.log(res)
-            }
-            else{
-                ToastAndroid.show('Lỗi',ToastAndroid.TOP)
-            }
-        })
-    }
-    const BarcodeItem = (item) =>{
-        return(
-            <Barcode 
-            style={{marginTop: 20}}
-            format={'CODE128'} value={BarcodeValue}
-            text={BarcodeValue}
-            textStyle={{marginTop: 14, fontSize: 20, fontWeight: 'bold', marginBottom: 10}}/>
-        )
-    }
+    
     const StatusItem = ({item}) => {
         return(
             <View>
                 <View style={styles.titleContent}>
-                    <Text style={{fontSize: 14, color: GRAY, fontWeight: 'bold'}}>Lịch sử trạng thái {ProductID}</Text>
+                    <Text style={{fontSize: 14, color: GRAY, fontWeight: 'bold'}}>Lịch sử trạng thái</Text>
+                    {/* <Text>{OrderID}</Text> */}
                 </View>
                 <View style={{padding: 20, flexDirection: 'column'}}> 
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>{/*trạng thái*/}
@@ -158,7 +142,7 @@ const InfoFail = ({navigation, route}) => {
                         <Text style={styles.textTitle}>Tổng tiền thu</Text>
                     </View>
                     <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                        <Text>{item.cod}</Text>
+                        <Text>{item.price}</Text>
                     </View>
                 </View>
                 <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
@@ -166,7 +150,7 @@ const InfoFail = ({navigation, route}) => {
                         <Text style={styles.textTitle}>Thông tin kiện hàng</Text>
                     </View>
                     <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                        <Text>{item.description}</Text>
+                        <Text>--------------</Text>
                     </View>
                 </View>
                 <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
@@ -190,7 +174,7 @@ const InfoFail = ({navigation, route}) => {
                         <Text style={styles.textTitle}>Phí thu hộ (COD)</Text>
                     </View>
                     <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                        <Text>{item.price}</Text>
+                        <Text>{item.cod}</Text>
                     </View>
                 </View>
                 <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
@@ -206,7 +190,7 @@ const InfoFail = ({navigation, route}) => {
                         <Text style={styles.textTitle}>Chỉ dẫn của người gửi/ chủ hàng khi không phát được vật phẩm:</Text>
                     </View>
                     <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                        <Text>Chuyển khoản</Text>
+                        <Text>{item.isSenderPayment}</Text>
                     </View>
                 </View>
             </View>
@@ -260,8 +244,9 @@ const InfoFail = ({navigation, route}) => {
         return(
             <View>
                 <TouchableOpacity style={styles.buttonStyle}
-                    onPress={()=>{setSuccess(true)}}>
-                    <Text style={{color: WHITE, fontWeight:'bold'}}>HOÀN HÀNG THÀNH CÔNG</Text>
+                            onPress={()=>{navigation.navigate('Home')}}>
+                    <Text style={{color: WHITE, fontWeight:'bold'}}>VỀ TRANG CHỦ</Text>
+                    <Image source={require('../img/homevector.png')} style={{marginLeft: 10}}></Image>
                 </TouchableOpacity>
             </View>
             
@@ -288,6 +273,10 @@ const InfoFail = ({navigation, route}) => {
                     <Image source={require('../img/notivector.png')}></Image>
                 </TouchableOpacity>
             </View>
+            <TouchableOpacity style={{borderWidth: 0, left: 0, position: 'absolute', marginLeft: 20, marginTop: 15}}
+                onPress={()=>{navigation.goBack()}}>
+            <Image source={require('../img/arrow.png')} style={{tintColor: '#000000'}}></Image>
+            </TouchableOpacity>
             <View>
                 <Text style={{fontSize: 20}}>Thông tin đơn hàng</Text>
             </View>
@@ -302,44 +291,6 @@ const InfoFail = ({navigation, route}) => {
             data={data}
             renderItem={(item)=>ListItem(item)}
         ></FlatList>
-        <Modal
-            visible={success}
-            transparent={true}
-            animationType={'slide'}>
-            <SafeAreaView style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                <View
-                    style={{backgroundColor: WHITE, width: 312, height: 295, alignItems: 'center', elevation: 12}}>
-                    <Image
-                        style={{marginTop: 30}}
-                        source={require('../img/packagereturn.png')}
-                    ></Image>
-                    <View style={{alignItems: 'center', marginTop: 20, width:'70%', alignSelf: 'center'}}>
-                        <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>
-                            Xác nhận Hoàn hàng thành công!                       
-                        </Text>
-                    </View>
-                    <View style={{flexDirection: 'row',flex: 1}}>
-                        <TouchableOpacity
-                            onPress={()=>{setSuccess(false)}}
-                            style={styles.buttonModalStyle}>
-                                <Text 
-                                    style={{color: '#000000', fontSize: 18}}>
-                                    ĐÓNG
-                                </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.buttonModalStyle}
-                            onPress={()=>{onConfirm()}}>
-                                <Text 
-                                    style={{color: GREEN, fontWeight: 'bold', fontSize: 18}}>
-                                    XÁC NHẬN
-                                </Text>
-                        </TouchableOpacity>
-                    </View>
-                    
-                </View>
-            </SafeAreaView>
-        </Modal>
     </SafeAreaView>
   );
 }
@@ -356,7 +307,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'row',
         alignItems: 'center',
-        
     },
     titleContent:{
         paddingLeft: 20,
@@ -373,9 +323,10 @@ const styles = StyleSheet.create({
         width:'90%',
         alignSelf: 'center',
         alignItems: 'center',
-        backgroundColor: BLUE,
+        backgroundColor: GREEN,
         justifyContent: 'center',
-        marginBottom: 15
+        marginBottom: 15,
+        flexDirection: 'row'
     },  
     buttonModalStyle:{
         alignSelf: 'center',
@@ -386,4 +337,4 @@ const styles = StyleSheet.create({
         flex: 1
     },
 })
-export default InfoFail;
+export default OrdersDetail;

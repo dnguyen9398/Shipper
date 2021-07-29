@@ -2,40 +2,103 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, SafeAreaView, Modal, Linking, TextInput} from 'react-native';
 import Barcode from '@kichiyaki/react-native-barcode-generator'
 import { GRAY, GREEN, WHITE, ORANGE } from '../asset/color';
-import DashedLine from 'react-native-dashed-line';
-import { data } from '../asset/datasample';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import RadioForm from 'react-native-simple-radio-button';
 import { ToastAndroid } from 'react-native';
+import { useEffect } from 'react';
+import { asyncGET, asyncPOST } from '../global/func';
+import { getStatus } from '../global/status';
 
-const Info = ({navigation}) => {
+const Info = ({navigation, route}) => {
     const [twoButton, setTwoButton] = useState(false)
     const [sentsuccess, setSentSuccess] = useState(false)
     const [Sentfail, setSentFail] = useState(false)
     const [confirm, setConfirm] = useState(false)
     const [deny, setDeny] = useState(false)
     const [radioButtons, setRadioButtons] = useState('')
-
+    const {BarcodeValue, ProductID} = route.params;
+    const [data,setData] = useState()
+    const [status, setStatus] = useState()
+    useEffect(()=>{
+        getData();
+      },[]);
+    const getData = () => {
+        ordersData()
+    }
     const onPressRadioButton = (value) => {
         ToastAndroid.show(value, ToastAndroid.SHORT)
     }
-    const BarcodeItem = (item) =>{
+    const ordersData = () => {
+        asyncGET(`api/search/${BarcodeValue}`).then((res) => {
+            if(res.Status = 200)
+            {
+                setData(res)
+                console.log(res)
+            }
+            else{
+                if(res.Status == 500)
+                {
+                  ToastAndroid.showWithGravity('lỗi',ToastAndroid.SHORT,ToastAndroid.BOTTOM)
+                  console.log(res)
+                } else{
+                  ToastAndroid.showWithGravity('lỗi data',ToastAndroid.SHORT,ToastAndroid.BOTTOM)
+                  console.log(res)
+                }
+              }
+        })
+    }
+    const BarcodeItem = () =>{
         return(
             <Barcode 
-            style={{marginTop: 20}}
-            format={'CODE128'} value={item.id}
-            text={item.id}
+            style={{marginTop: 20,}}
+            format={'CODE128'} value={BarcodeValue}
+            text={BarcodeValue}
             textStyle={{marginTop: 14, fontSize: 20, fontWeight: 'bold', marginBottom: 10}}/>
         )
     }
-    const onConfirm = () =>{
-        navigation.navigate('Success')
+    const onSentSuccess = () =>{
+        ChangeStatus(4)
+        navigation.navigate('Success',{
+            BarcodeValue : BarcodeValue
+        })
     }
-    const StatusItem = ({item}) => {
+    const onSentFail = () =>{
+        ChangeStatus(5)
+        navigation.navigate('Fail',{
+            BarcodeValue : BarcodeValue,
+            ProductID : ProductID
+        }
+        )
+    }
+    const onConfirm = () =>{
+        ChangeStatus(3)
+        setTwoButton(true)
+        setConfirm(false)
+    }
+    const onDeny = () =>{
+        ChangeStatus(7)
+        navigation.navigate('Home')
+
+    }
+    const ChangeStatus = async(status) => {
+        var obj = {
+            "Status" : status,
+        }
+        asyncPOST(`api/updateStatus/${ProductID}`,obj).then((res)=>{
+            if(res.Status = 200)
+            {
+                console.log(res)
+            }
+            else{
+                ToastAndroid.show('Lỗi',ToastAndroid.TOP)
+            }
+        })
+    }
+    const StatusItem = (item) => {
         return(
             <View>
                 <View style={styles.titleContent}>
-                    <Text style={{fontSize: 14, color: GRAY, fontWeight: 'bold'}}>Lịch sử trạng thái</Text>
+                    <Text style={{fontSize: 14, color: GRAY, fontWeight: 'bold'}}>Lịch sử trạng thái {ProductID}</Text>
                 </View>
                 <View style={{padding: 20, flexDirection: 'column'}}> 
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>{/*trạng thái*/}
@@ -74,8 +137,8 @@ const Info = ({navigation}) => {
                         <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
                             <TouchableOpacity 
                             style={{flexDirection: 'row', backgroundColor: GREEN,alignItems: 'center', paddingLeft: 20, paddingRight: 10, padding: 2, borderRadius: 4}}
-                            onPress={()=>{Linking.openURL(`tel:${item.tel}`)}}>
-                                <Text style={{fontWeight: 'bold', color: WHITE, marginRight: 10}}>{item.tel}</Text>
+                            onPress={()=>{Linking.openURL(`tel:${item.sendermobile}`)}}>
+                                <Text style={{fontWeight: 'bold', color: WHITE, marginRight: 10}}>{item.sendermobile}</Text>
                                 <Image source={require('../img/phongvector.png')}></Image>
                             </TouchableOpacity>
                         </View>
@@ -85,7 +148,7 @@ const Info = ({navigation}) => {
                             <Text style={styles.textTitle}>Họ và tên </Text>
                         </View>
                         <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                            <Text>Nguyễn Văn A</Text>
+                            <Text>{item.sender}</Text>
                         </View>
                     </View>
                     <View style={{flexDirection: 'column',borderBottomWidth: 0.2, padding: 20, }}>
@@ -94,7 +157,7 @@ const Info = ({navigation}) => {
                         </View>
                         <View style={{borderWidth: 0,  alignItems: 'flex-start', flexDirection: 'row'}}>
                             <View style={{width: '90%'}}>
-                                <Text>13/ 249A Lê Đức Thọ, Phường 12, Q. Gò Vấp </Text>
+                                <Text>{item.senderaddress}</Text>
                             </View>
                             <View style={{alignItems: 'flex-end', flex: 1, borderWidth: 0, alignSelf: 'center'}}>
                                 <Image source={require('../img/placevector.png')}></Image>
@@ -117,7 +180,7 @@ const Info = ({navigation}) => {
                         <Text style={styles.textTitle}>Trạng thái</Text>
                     </View>
                     <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                        <Text>Thu tiền mặt</Text>
+                        <Text>{getStatus(item)}</Text>
                     </View>
                 </View>
                 <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
@@ -125,7 +188,7 @@ const Info = ({navigation}) => {
                         <Text style={styles.textTitle}>Tổng tiền thu</Text>
                     </View>
                     <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                        <Text>200000</Text>
+                        <Text>{item.cod}</Text>
                     </View>
                 </View>
                 <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
@@ -133,7 +196,7 @@ const Info = ({navigation}) => {
                         <Text style={styles.textTitle}>Thông tin kiện hàng</Text>
                     </View>
                     <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                        <Text>--------------</Text>
+                        <Text>{item.description}</Text>
                     </View>
                 </View>
                 <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
@@ -157,7 +220,7 @@ const Info = ({navigation}) => {
                         <Text style={styles.textTitle}>Phí thu hộ (COD)</Text>
                     </View>
                     <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                        <Text>Có</Text>
+                        <Text>{item.price}</Text>
                     </View>
                 </View>
                 <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
@@ -165,7 +228,7 @@ const Info = ({navigation}) => {
                         <Text style={styles.textTitle}>Hình thức vận chuyển</Text>
                     </View>
                     <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                        <Text>Giao hàng trong 6 tiếng</Text>
+                        <Text>{item.Methodtrans}</Text>
                     </View>
                 </View>
                 <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>
@@ -194,8 +257,8 @@ const Info = ({navigation}) => {
                         <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
                             <TouchableOpacity 
                                 style={{flexDirection: 'row', backgroundColor: GREEN,alignItems: 'center', paddingLeft: 20, paddingRight: 10, padding: 2, borderRadius: 4}}
-                                onPress={()=>{Linking.openURL(`tel:${item.tel}`)}}>
-                                <Text style={{fontWeight: 'bold', color: WHITE, marginRight: 10}}>0933265539</Text>
+                                onPress={()=>{Linking.openURL(`tel:${item.customermobile}`)}}>
+                                <Text style={{fontWeight: 'bold', color: WHITE, marginRight: 10}}>{item.customermobile}</Text>
                                 <Image source={require('../img/phongvector.png')}></Image>
                             </TouchableOpacity>
                         </View>
@@ -205,7 +268,7 @@ const Info = ({navigation}) => {
                             <Text style={styles.textTitle}>Họ và tên </Text>
                         </View>
                         <View style={{borderWidth: 0, flex: 1, alignItems: 'flex-end'}}>
-                            <Text>Nguyễn Văn B</Text>
+                            <Text>{item.customer}</Text>
                         </View>
                     </View>
                     <View style={{flexDirection: 'column',borderBottomWidth: 0.2, padding: 20, }}>
@@ -214,7 +277,7 @@ const Info = ({navigation}) => {
                         </View>
                         <View style={{borderWidth: 0,  alignItems: 'flex-start', flexDirection: 'row',}}>
                             <View style={{width: '90%'}}>
-                                <Text>25 Nguyễn Bỉnh Khiêm, Khu 3, Phường 2, Tp. Bảo Lộc, Lâm Đồng</Text>
+                                <Text>{item.customeraddress}</Text>
                             </View>
                             <View style={{alignItems: 'flex-end', flex: 1, borderWidth: 0, alignSelf: 'center'}}>
                                 <Image source={require('../img/placevector.png')}></Image>
@@ -264,7 +327,7 @@ const Info = ({navigation}) => {
     const ListItem = ({item}) => {
         return(
             <View>
-                {BarcodeItem(item)}
+                {BarcodeItem()}
                 {StatusItem(item)}
                 {SentInfo(item)}
                 {ProductInfo(item)}
@@ -291,14 +354,9 @@ const Info = ({navigation}) => {
                 <Text style={{fontSize: 20}}>Thông tin đơn hàng</Text>
             </View>
         </View>
-                
-        {/* <StatusItem></StatusItem>
-        <SentInfo></SentInfo>
-        <ProductInfo></ProductInfo>
-        <RecieveInfo></RecieveInfo> */}
-            {/* <MainList></MainList> */}
         <FlatList
             data={data}
+            key={(item)=>item.id}
             renderItem={(item)=>ListItem(item)}
         ></FlatList>
         <Modal
@@ -328,7 +386,7 @@ const Info = ({navigation}) => {
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.buttonModalStyle}
-                            onPress={()=>{onConfirm()}}>
+                            onPress={()=>{onSentSuccess()}}>
                                 <Text 
                                     style={{color: GREEN, fontWeight: 'bold', fontSize: 18}}>
                                     XÁC NHẬN
@@ -366,7 +424,7 @@ const Info = ({navigation}) => {
                                 </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            onPress={()=>{navigation.navigate('Fail')}}
+                            onPress={()=>onSentFail()}
                             style={styles.buttonModalStyle}>
                                 <Text 
                                     style={{color: GREEN, fontWeight: 'bold', fontSize: 18}}>
@@ -404,7 +462,7 @@ const Info = ({navigation}) => {
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.buttonModalStyle}
-                            onPress={()=>{setTwoButton(true), setConfirm(false)}}>
+                            onPress={()=>{onConfirm()}}>
                                 <Text 
                                     style={{color: GREEN, fontWeight: 'bold', fontSize: 18}}>
                                     XÁC NHẬN
@@ -471,7 +529,7 @@ const Info = ({navigation}) => {
                             style={styles.buttonModalStyle}>
                                 <Text 
                                     style={{color: GREEN, fontWeight: 'bold', fontSize: 18}}
-                                    onPress={()=>navigation.navigate('Home')}>
+                                    onPress={()=>onDeny()}>
                                     XÁC NHẬN
                                 </Text>
                         </TouchableOpacity>
