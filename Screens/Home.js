@@ -30,11 +30,10 @@ const Home = ({navigation, route}) => {
                         ProductID : res[0].id
                     })
                     ToastAndroid.show('Tìm thành công', ToastAndroid.SHORT)
-                    console.log(res[0].id)
+                    console.log('ID hàng là ' + res[0].id)
                 }
             }
             else {
-                SetNotFound(true)
                 console.log(res)
             } 
         })
@@ -82,7 +81,7 @@ const Home = ({navigation, route}) => {
         <MenuTrigger></MenuTrigger>
         <MenuOptions>
             <MenuOption onSelect={()=>onPressMenu()} style={{flexDirection: 'row', alignItems: 'center', elevation: 12}}>
-                <Text style={{fontSize: 18, fontWeight:'bold', flex: 1}}>Đăng Xuất</Text>
+                <Text style={{fontSize: 16, fontWeight:'bold', flex: 1}}>Đăng Xuất</Text>
                 <Image source={require('../img/LogOut.png')} width={15} height={15}></Image>
             </MenuOption>
         </MenuOptions>

@@ -49,7 +49,6 @@ const LoginPhone = ({navigation}) => {
         else{
           navigation.navigate('OTP',{
             phoneNumber : phoneNum,
-            phoneOTP : JSON.stringify(res.OTP),
             })
             console.log(res)
             dispatch(STORE_MEMBER(res.phone))

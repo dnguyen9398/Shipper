@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, SafeAreaView, Modal, Linking, TextInput} from 'react-native';
 import Barcode from '@kichiyaki/react-native-barcode-generator'
-import { GRAY, GREEN, WHITE, ORANGE } from '../asset/color';
+import { GRAY, GREEN, WHITE, ORANGE, RED } from '../asset/color';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import RadioForm from 'react-native-simple-radio-button';
 import { ToastAndroid } from 'react-native';
 import { useEffect } from 'react';
 import { asyncGET, asyncPOST } from '../global/func';
 import { getStatus } from '../global/status';
+import { launchCamera } from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 
 const Info = ({navigation, route}) => {
     const [twoButton, setTwoButton] = useState(false)
@@ -19,6 +21,8 @@ const Info = ({navigation, route}) => {
     const {BarcodeValue, ProductID} = route.params;
     const [data,setData] = useState()
     const [status, setStatus] = useState()
+    const [imageURI, setImageURI] = useState(null)
+    const [showError, setShowError] = useState('')
     useEffect(()=>{
         getData();
       },[]);
@@ -47,6 +51,31 @@ const Info = ({navigation, route}) => {
               }
         })
     }
+    const OpenCamera = () =>{
+        ImagePicker.openCamera({
+            width: 100,
+            height: 100,
+            cropping: false,
+            mediaType: 'photo',
+        }).then(image => {
+            console.log('received image');
+            console.log(image)
+            setImageURI({
+                uri: image.path,
+                width: image.width,
+                height: image.height,
+                mime: image.mime,
+            })
+        }).catch(e=> console.log(e))
+    }
+    const createFormData = (photo) => {
+        const data = new FormData();
+        data.append('photo', {
+            type: photo.mime,
+            uri: photo.uri.replace("file://", "")
+        })
+        return data
+    }
     const BarcodeItem = () =>{
         return(
             <Barcode 
@@ -57,32 +86,58 @@ const Info = ({navigation, route}) => {
         )
     }
     const onSentSuccess = () =>{
-        ChangeStatus(4)
-        navigation.navigate('Success',{
-            BarcodeValue : BarcodeValue
-        })
+        if(imageURI == null)
+        {
+            setShowError('Vui lòng chụp ảnh kiện hàng')
+        }else{
+            ChangeStatus(4, imageURI)
+            navigation.navigate('Success',{
+            BarcodeValue : BarcodeValue})
+            setShowError('')
+        }
     }
     const onSentFail = () =>{
         ChangeStatus(5)
         navigation.navigate('Fail',{
             BarcodeValue : BarcodeValue,
             ProductID : ProductID
-        }
-        )
+        })
     }
     const onConfirm = () =>{
-        ChangeStatus(3)
+        ChangeStatusWithoutImage(3, 'Đã nhận đơn hàng')
         setTwoButton(true)
         setConfirm(false)
     }
     const onDeny = () =>{
-        ChangeStatus(7)
-        navigation.navigate('Home')
-
+        if(imageURI == null)
+        {
+            setShowError('Vui lòng chụp ảnh kiện hàng')
+        }
+        else{   
+            ChangeStatus(7, imageURI)
+            navigation.navigate('Home')
+            setConfirm('')
+        }
     }
-    const ChangeStatus = async(status) => {
+    const ChangeStatus = async(status, imageURI) => {
         var obj = {
             "Status" : status,
+            "note" : JSON.stringify(createFormData(imageURI)),
+        }
+        asyncPOST(`api/updateStatus/${ProductID}`,obj).then((res)=>{
+            if(res.Status = 200)
+            {
+                console.log(res)
+            }
+            else{
+                ToastAndroid.show('Lỗi',ToastAndroid.TOP)
+            }
+        })
+    }
+    const ChangeStatusWithoutImage = async(status, note) => {
+        var obj = {
+            "Status" : status,
+            "note" : note
         }
         asyncPOST(`api/updateStatus/${ProductID}`,obj).then((res)=>{
             if(res.Status = 200)
@@ -365,17 +420,29 @@ const Info = ({navigation, route}) => {
             animationType={'slide'}>
             <SafeAreaView style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
                 <View
-                    style={{backgroundColor: WHITE, width: 312, height: 295, alignItems: 'center', elevation: 12}}>
+                    style={{backgroundColor: WHITE, width: 312, alignItems: 'center', elevation: 12}}>
                     <Image
                         style={{marginTop: 30}}
                         source={require('../img/package.png')}
                     ></Image>
-                    <View style={{alignItems: 'center', marginTop: 20, width:'70%', alignSelf: 'center'}}>
+                    <View style={{alignItems: 'center', marginTop: 20, width:'95%', alignSelf: 'center', marginBottom: 10}}>
                         <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>
                             Xác nhận giao hàng thành công!                        
                         </Text>
                     </View>
-                    <View style={{flexDirection: 'row',flex: 1}}>
+                    <View style={{width: '90%',marginBottom: 10, alignSelf: 'center',}}>
+                        <Text style={{fontSize: 14, opacity: 0.7, fontWeight: 'bold'}}>Ảnh xác nhận </Text>
+                        <View style={{borderWidth: 0.5, width: '100%', marginTop: 10, flexDirection: 'row'}}>
+                            <TouchableOpacity style={{alignSelf: 'center', padding: 10, right: 0, position: 'absolute'}} onPress={()=>{OpenCamera()}}>
+                                <Image source={require('../img/PicVector.png')}></Image>
+                            </TouchableOpacity>
+                            <Image source={imageURI} style={{width: 50, height: 50, resizeMode: 'contain', borderWidth: 1, alignSelf: 'center', margin: 10}}></Image>
+                        </View>
+                    </View>
+                    <View View style={{justifyContent: 'center', width: '90%', alignSelf: 'center', marginBottom: 10}}>
+                        <Text style={{fontStyle:'italic', color: RED}}>{showError}</Text>
+                    </View>
+                    <View style={{flexDirection: 'row',marginBottom: 10}}>
                         <TouchableOpacity
                             onPress={()=>{setSentSuccess(false)}}
                             style={styles.buttonModalStyle}>
@@ -403,7 +470,7 @@ const Info = ({navigation, route}) => {
             animationType={'slide'}>
             <SafeAreaView style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
                 <View
-                    style={{backgroundColor: WHITE, width: 312, height: 295, alignItems: 'center', elevation: 12}}>
+                    style={{backgroundColor: WHITE, width: 312, alignItems: 'center', elevation: 12}}>
                     <Image
                         style={{marginTop: 30}}
                         source={require('../img/packagefail.png')}
@@ -414,7 +481,47 @@ const Info = ({navigation, route}) => {
                         Xác nhận để hoàn hàng lại?                        
                         </Text>
                     </View>
-                    <View style={{flexDirection: 'row',flex: 1}}>
+                    <View style={{marginTop: 20, alignSelf: 'flex-start', marginLeft: 20}}>
+                        <Text style={{fontSize: 16, textAlign: 'center', fontWeight: 'bold'}}>
+                            Lý do                     
+                        </Text>
+                    </View>
+                    <View style={{width: '90%', marginTop: 10, alignSelf: 'center', marginBottom: 10}}>
+                        <RadioForm
+                            radio_props={[{
+                                label: 'Hàng bị hư hỏng',
+                                value: 'Hàng bị hư hỏng'
+                            }, {
+                                label: 'Khách không nhận hàng',
+                                value: 'Khách không nhận hàng'
+                            },{
+                                label:'Khách hẹn giao lại',
+                                value: 'Khách hẹn giao lại'
+                            },{
+                                label: 'Khác',
+                                value: 'Khác'
+                            }]}
+                            buttonSize={10}
+                            buttonColor={'#000000'}
+                            onPress={onPressRadioButton}
+                            selectedButtonColor={GREEN}
+                            selectedLabelColor={GREEN}
+                            labelStyle={{fontSize: 16}}>
+                       </RadioForm>
+                    </View>
+                    <View style={{width: '90%',marginBottom: 10, alignSelf: 'center',}}>
+                        <Text style={{fontWeight: 'bold', fontSize: 16}}>Ảnh kiện hàng</Text>
+                        <View style={{borderWidth: 0.5, width: '100%', marginTop: 10, flexDirection: 'row',}}>
+                            <TouchableOpacity style={{alignSelf: 'center', padding: 10, right: 0, position: 'absolute'}} onPress={()=>{OpenCamera()}}>
+                                <Image source={require('../img/PicVector.png')}></Image>
+                            </TouchableOpacity>
+                            <Image source={imageURI} style={{width: 50, height: 50, resizeMode: 'contain', borderWidth: 1, alignSelf: 'center', margin: 10}}></Image>
+                        </View>
+                    </View>
+                    <View View style={{justifyContent: 'center', width: '90%', alignSelf: 'center', marginBottom: 10}}>
+                        <Text style={{fontStyle:'italic', color: RED}}>{showError}</Text>
+                    </View>
+                    <View style={{flexDirection: 'row',marginBottom: 10}}>
                         <TouchableOpacity
                             onPress={()=>{setSentFail(false)}}
                             style={styles.buttonModalStyle}>
@@ -477,23 +584,22 @@ const Info = ({navigation, route}) => {
             transparent={true}
             animationType={'slide'}>
             <SafeAreaView style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                <View
-                    style={{backgroundColor: WHITE, width: 312, height: 430, alignItems: 'center', elevation: 12}}>
+                <View style={{backgroundColor: WHITE, width: 312, elevation: 12}}>
                     <View style={{alignItems: 'center', marginTop: 10, width:'70%', alignSelf: 'center'}}>
                         <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>
                             Từ chối nhận đơn hàng!                        
                         </Text>
                     </View>
                     <Image
-                        style={{marginTop: 30}}
+                        style={{marginTop: 30, alignSelf: 'center'}}
                         source={require('../img/packagefail.png')}
                     ></Image>
                     <View style={{marginTop: 20, alignSelf: 'flex-start', marginLeft: 20}}>
-                        <Text style={{fontSize: 18, textAlign: 'center', fontWeight: 'bold'}}>
-                            Lý do:                        
+                        <Text style={{fontSize: 16, textAlign: 'center', fontWeight: 'bold'}}>
+                            Lý do                     
                         </Text>
                     </View>
-                    <View style={{width: '90%', marginTop: 10, marginBottom: 15}}>
+                    <View style={{width: '90%', marginTop: 10, alignSelf: 'center'}}>
                         <RadioForm
                             radio_props={[{
                                 label: 'Hàng bị hư hỏng',
@@ -515,6 +621,18 @@ const Info = ({navigation, route}) => {
                             selectedLabelColor={GREEN}
                             labelStyle={{fontSize: 16}}>
                        </RadioForm>
+                    </View>
+                    <View style={{width: '90%',marginBottom: 10, alignSelf: 'center',}}>
+                        <Text style={{fontWeight: 'bold', fontSize: 16}}>Ảnh kiện hàng</Text>
+                        <View style={{borderWidth: 0.5, width: '100%', marginTop: 10, flexDirection: 'row',}}>
+                            <TouchableOpacity style={{alignSelf: 'center', padding: 10, right: 0, position: 'absolute'}} onPress={()=>{OpenCamera()}}>
+                                <Image source={require('../img/PicVector.png')}></Image>
+                            </TouchableOpacity>
+                            <Image source={imageURI} style={{width: 50, height: 50, resizeMode: 'contain', borderWidth: 1, alignSelf: 'center', margin: 10}}></Image>
+                        </View>
+                    </View>
+                    <View View style={{justifyContent: 'center', width: '90%', alignSelf: 'center', marginBottom: 10}}>
+                        <Text style={{fontStyle:'italic', color: RED}}>{showError}</Text>
                     </View>
                     <View style={{flexDirection: 'row',marginBottom: 10}}>
                         <TouchableOpacity

@@ -38,14 +38,15 @@ const InfoFail = ({navigation, route}) => {
         })
     }
     const onConfirm = () => {
-        ChangeStatus(8)
+        ChangeStatus(8, 'Hoàn trả hàng thành công')
         navigation.navigate('Success',{
             BarcodeValue : BarcodeValue
         })
     }
-    const ChangeStatus = async(status) => {
+    const ChangeStatus = async(status, note) => {
         var obj = {
             "Status" : status,
+            'note' : note
         }
         asyncPOST(`api/updateStatus/${ProductID}`,obj).then((res)=>{
             if(res.Status = 200)
