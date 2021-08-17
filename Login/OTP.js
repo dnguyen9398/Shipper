@@ -12,9 +12,9 @@ import { asyncPOST } from '../global/func';
 
 const OTP = ({route,navigation}) => {
   let textInput = useRef(null)
-  const {phoneNumber} = route.params;
+  const {phoneNumber,confirm} = route.params;
   const [internalVal, setInternalVal] = useState("")
-  const lengthInput = 4;
+  const lengthInput = 6;
   const [showError, setShowError] = useState('');
   const onChangeText = (val) => {
     setInternalVal(val)
@@ -37,37 +37,49 @@ const OTP = ({route,navigation}) => {
 }
   const onConfirm = () =>{
     if(internalVal.length == lengthInput){
-      VerifyOTP()
+        VerifyOTP()
     }
     else{
       setShowError('Vui lòng nhập mã OTP')
     }
   }
-  const VerifyOTP = async() => {
-    var obj = {
-      "phone": phoneNumber,
-      "otp" : internalVal,
-    }
-    asyncPOST("api/verify",obj).then((res) => {
-      if(res.Status = 200){
-        if(res.message == "successful"){
-          Keyboard.dismiss()
-          navigation.navigate('Loading')
-          console.log(res)
-          AsyncStorage.setItem('token',res.token)
+  // const VerifyOTP = async() => {
+  //   var obj = {
+  //     "phone": phoneNumber,
+  //     "otp" : internalVal,
+  //   }
+  //   asyncPOST("api/verify",obj).then((res) => {
+  //     if(res.Status = 200){
+  //       if(res.message == "successful"){
+  //         Keyboard.dismiss()
+  //         navigation.navigate('Loading')
+  //         console.log(res)
+  //         AsyncStorage.setItem('token',res.token)
           
-          // alert(AsyncStorage.getItem('token'))
-        }
-        else{
-          setShowError('Mã OTP không đúng')
-          console.log(res)
-        }
-      }
-      else{
-        console.log(res)
-      }
-    })
+  //         // alert(AsyncStorage.getItem('token'))
+  //       }
+  //       else{
+  //         setShowError('Mã OTP không đúng')
+  //         console.log(res)
+  //       }
+  //     }
+  //     else{
+  //       console.log(res)
+  //     }
+  //   })
+  //   }
+  const VerifyOTP = async() => {
+    try {
+      let data = await confirm.confirm(internalVal)
+      console.log(data)
+      Keyboard.dismiss()
+      navigation.navigate('Loading')
+      
+    } catch (error) {
+      console.log('invalid code')
+      setShowError('Mã OTP không đúng')
     }
+  }
   return (
       <SafeAreaView style={styles.container}>
         <TouchableOpacity 

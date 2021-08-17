@@ -16,9 +16,25 @@ import OrdersDetail from './Screens/OrdersDetail';
 import { Provider } from 'react-redux';
 import store from './redux/store';
 import { MenuProvider } from 'react-native-popup-menu';
+import { firebase } from '@react-native-firebase/auth';
 
+const credentials = {
+  clientId: '',
+  appId: '1:881194392753:android:f779f2fa1f798ef43d9690',
+  apiKey: 'AIzaSyDUv7cVi40c73x2kotlEhkcCxhpVikbhrI',
+  databaseURL: '',
+  storageBucket: '',
+  messagingSenderId: '',
+  projectId: 'chanh8-2b3c8',
+};
+if (!firebase.apps.length) {
+  firebase.initializeApp(credentials);
+}else {
+  firebase.app(); // if already initialized, use that one
+}
 const App = () => {
   const Stack = createStackNavigator()
+  
   return (
     <Provider store={store}>
       <MenuProvider>

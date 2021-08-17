@@ -9,10 +9,14 @@ import { Alert } from 'react-native';
 import OTP from './OTP';
 import { useDispatch } from 'react-redux';
 import { STORE_MEMBER, STORE_OTP } from '../redux/action';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
+
 const LoginPhone = ({navigation}) => {
   const [phoneNum, setPhoneNumber] = useState('')
   const [showError, setShowError] = useState('');
   const dispatch = useDispatch()
+  const [confirm, setConfirm] = useState(null)
   const onChangePhone= (number) =>{
     setPhoneNumber(number)
   }
@@ -47,31 +51,46 @@ const LoginPhone = ({navigation}) => {
           console.log('Không tìm thấy số điện thoại')
         }
         else{
-          navigation.navigate('OTP',{
-            phoneNumber : phoneNum,
-            })
+          // navigation.navigate('OTP',{
+          //   phoneNumber : phoneNum,
+          //   })
+            SignInFirebase()
             console.log(res)
-            dispatch(STORE_MEMBER(res.phone))
-            dispatch(STORE_OTP(res.otp))
-            _storedata([['StorePhone', res.phone],['StoreOTP',JSON.stringify(res.otp)]])
-            console.log(res)
-            Alert.alert('Mã OTP của bạn là:', JSON.stringify(res.otp), [
-              {
-                text: 'OK'
-              }
-            ], {
-              cancelable:false
-            })
+            AsyncStorage.setItem('token',res.token)
+
+            // dispatch(STORE_MEMBER(res.phone)) chỉnh sửa sau
+            // dispatch(STORE_OTP(res.otp))
+            // _storedata([['StorePhone', res.phone],['StoreOTP',JSON.stringify(res.otp)]])
+            // console.log(res)
+            // Alert.alert('Mã OTP của bạn là:', JSON.stringify(res.otp), [
+            //   {
+            //     text: 'OK'
+            //   }
+            // ], {
+            //   cancelable:false
+            // })
           }
         }
       else{
         ToastAndroid.show('Lỗi',ToastAndroid.TOP)
       }
+
     })
+    
+  }
+  const SignInFirebase = async() => {
+    const confirmation = await auth().signInWithPhoneNumber('+84'+phoneNum,true);
+    console.log(JSON.stringify(confirmation))
+    if(confirmation){
+      setConfirm(confirmation)
+      navigation.navigate('OTP',{
+        confirm: confirmation
+      })
     }
+  }
 
   
-  return (
+    return (
     <SafeAreaView
       style={styles.container}>
         <KeyboardAwareScrollView>
