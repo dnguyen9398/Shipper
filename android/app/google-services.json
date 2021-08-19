@@ -7,18 +7,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:881194392753:android:77242030490ba5403d9690",
+        "mobilesdk_app_id": "1:881194392753:android:7868c5f8c0ed8ef63d9690",
         "android_client_info": {
-          "package_name": "Chanh8Express.App"
+          "package_name": "com.shipper"
         }
       },
       "oauth_client": [
         {
-          "client_id": "881194392753-j04gmvqhc346tm5i24ap41j0r65spn0k.apps.googleusercontent.com",
+          "client_id": "881194392753-8iurisklrji5p6ipf2i3bhah3uij843f.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "Chanh8Express.App",
-            "certificate_hash": "36843f77a9371d1f4960622e3b3dca74dc1d0f36"
+            "package_name": "com.shipper",
+            "certificate_hash": "0a4d5ed466eb33e893d72adeccdc29952376251b"
           }
         },
         {
@@ -51,7 +51,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "881194392753-u700aait1jk987pqpdcmejin3v4em8sr.apps.googleusercontent.com",
+          "client_id": "881194392753-ta70vt0kd94seql46d4405kdqc3eieae.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "shippernew.chanh8",
+            "certificate_hash": "0a4d5ed466eb33e893d72adeccdc29952376251b"
+          }
+        },
+        {
+          "client_id": "881194392753-v1q8ur52qmtp7flatr38dh1gecdfff1v.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "shippernew.chanh8",

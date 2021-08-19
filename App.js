@@ -16,16 +16,17 @@ import OrdersDetail from './Screens/OrdersDetail';
 import { Provider } from 'react-redux';
 import store from './redux/store';
 import { MenuProvider } from 'react-native-popup-menu';
-import { firebase } from '@react-native-firebase/auth';
+import  firebase  from '@react-native-firebase/app';
 
 const credentials = {
-  clientId: '',
-  appId: '1:881194392753:android:f779f2fa1f798ef43d9690',
-  apiKey: 'AIzaSyDUv7cVi40c73x2kotlEhkcCxhpVikbhrI',
-  databaseURL: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  projectId: 'chanh8-2b3c8',
+    apiKey: "AIzaSyDUv7cVi40c73x2kotlEhkcCxhpVikbhrI",
+    authDomain: "chanh8-2b3c8.firebaseapp.com",
+    projectId: "chanh8-2b3c8",
+    storageBucket: "chanh8-2b3c8.appspot.com",
+    messagingSenderId: "881194392753",
+    appId: "1:881194392753:web:b2d5c40e689c77173d9690",
+    measurementId: "G-XQR6NQ0KJN",
+    databaseURL: ''
 };
 if (!firebase.apps.length) {
   firebase.initializeApp(credentials);

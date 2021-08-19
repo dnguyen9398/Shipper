@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import { STORE_MEMBER, STORE_OTP } from '../redux/action';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
+import  firebase  from '@react-native-firebase/app';
 
 const LoginPhone = ({navigation}) => {
   const [phoneNum, setPhoneNumber] = useState('')
@@ -79,14 +80,23 @@ const LoginPhone = ({navigation}) => {
     
   }
   const SignInFirebase = async() => {
-    const confirmation = await auth().signInWithPhoneNumber('+84'+phoneNum,true);
-    console.log(JSON.stringify(confirmation))
-    if(confirmation){
-      setConfirm(confirmation)
-      navigation.navigate('OTP',{
-        confirm: confirmation
-      })
-    }
+    // const confirmation = await auth().signInWithPhoneNumber('+84'+phoneNum,true);
+    // console.log(JSON.stringify(confirmation))
+    // if(confirmation){
+    //   setConfirm(confirmation)
+    //   navigation.navigate('OTP',{
+    //     confirm: confirmation
+    //   })
+    // }
+    firebase.auth().signInWithPhoneNumber('+84'+phoneNum)
+      .then((confirmation)=>{
+        console.log(confirmation)
+        navigation.navigate('OTP',{
+          confirm: confirmation
+        })
+    }).catch((error) =>{
+      console.log(error)
+    })
   }
 
   
