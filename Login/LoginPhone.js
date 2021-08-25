@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { GRAY, GREEN, MAIN_COLOR, RED, WHITE } from '../asset/color';
 import {Hoshi} from 'react-native-textinput-effects'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -18,9 +18,14 @@ const LoginPhone = ({navigation}) => {
   const [showError, setShowError] = useState('');
   const dispatch = useDispatch()
   const [confirm, setConfirm] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [textlabel, setTextLabe] = useState(true)
   const onChangePhone= (number) =>{
     setPhoneNumber(number)
   }
+  const onPressAnimation = () =>{
+    setLoading(true)
+    setTextLabe(false)}
   const onPress = () =>{
     if(phoneNum == ''){
       setShowError('Vui lòng nhập số điện thoại')
@@ -32,7 +37,8 @@ const LoginPhone = ({navigation}) => {
     }
     else{ 
       setShowError('')
-      SignIn()}  
+      SignInFirebase()
+      onPressAnimation()}
     } 
   }
   const SignIn = async() => {
@@ -52,24 +58,8 @@ const LoginPhone = ({navigation}) => {
           console.log('Không tìm thấy số điện thoại')
         }
         else{
-          // navigation.navigate('OTP',{
-          //   phoneNumber : phoneNum,
-          //   })
-            SignInFirebase()
             console.log(res)
             AsyncStorage.setItem('token',res.token)
-
-            // dispatch(STORE_MEMBER(res.phone)) chỉnh sửa sau
-            // dispatch(STORE_OTP(res.otp))
-            // _storedata([['StorePhone', res.phone],['StoreOTP',JSON.stringify(res.otp)]])
-            // console.log(res)
-            // Alert.alert('Mã OTP của bạn là:', JSON.stringify(res.otp), [
-            //   {
-            //     text: 'OK'
-            //   }
-            // ], {
-            //   cancelable:false
-            // })
           }
         }
       else{
@@ -80,23 +70,24 @@ const LoginPhone = ({navigation}) => {
     
   }
   const SignInFirebase = async() => {
-    // const confirmation = await auth().signInWithPhoneNumber('+84'+phoneNum,true);
-    // console.log(JSON.stringify(confirmation))
-    // if(confirmation){
-    //   setConfirm(confirmation)
-    //   navigation.navigate('OTP',{
-    //     confirm: confirmation
-    //   })
-    // }
-    firebase.auth().signInWithPhoneNumber('+84'+phoneNum)
-      .then((confirmation)=>{
+    await firebase.auth().verifyPhoneNumber('+84'+phoneNum)
+      .then(function (confirmation) {
         console.log(confirmation)
         navigation.navigate('OTP',{
-          confirm: confirmation
+          confirm: confirmation,
+          secretOTP : confirmation.code
         })
+        SignIn()
+        setLoading(false)
+        setTextLabe(true)
     }).catch((error) =>{
       console.log(error)
     })
+    // const confirmation = await auth().signInWithPhoneNumber('+84'+phoneNum)
+    // setConfirm(confirmation)
+    // navigation.navigate('OTP',{
+    //     confirm: confirmation
+    // })
   }
 
   
@@ -129,12 +120,21 @@ const LoginPhone = ({navigation}) => {
         <View View style={{justifyContent: 'center', width: '90%', alignSelf: 'center', marginBottom: 10}}>
             <Text style={{fontStyle:'italic', color: RED}}>{showError}</Text>
         </View>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.buttonStyle}
           onPress={onPress}>
-            <Text 
+            {
+              textlabel &&(
+                <Text 
                 style={{color: WHITE, fontWeight: 'bold'}}
                 >TIẾP TỤC</Text>
+              )
+            }
+            {
+              loading && (
+                <ActivityIndicator animating={true} size='large' color={WHITE}></ActivityIndicator>
+              )
+            }
         </TouchableOpacity>
         <View style={{flexDirection: 'row', width: '90%', alignSelf: 'center', margin: 30}}>
             <View style={{backgroundColor: GRAY, height: 0.5, flex: 1, alignSelf: 'center'}} />

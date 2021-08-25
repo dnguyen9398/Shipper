@@ -9,13 +9,17 @@ import { StyleSheet } from 'react-native';
 import { Text, View } from 'react-native';
 import { GRAY, GREEN, MAIN_COLOR, WHITE,ORANGE, RED } from '../asset/color';
 import { asyncPOST } from '../global/func';
+import auth from '@react-native-firebase/auth';
+import { useEffect } from 'react';
 
 const OTP = ({route,navigation}) => {
   let textInput = useRef(null)
-  const {phoneNumber,confirm} = route.params;
+  const {phoneNumber, confirm, secretOTP} = route.params;
   const [internalVal, setInternalVal] = useState("")
   const lengthInput = 6;
   const [showError, setShowError] = useState('');
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
   const onChangeText = (val) => {
     setInternalVal(val)
     // if ((val.length == lengthInput)) {
@@ -69,16 +73,32 @@ const OTP = ({route,navigation}) => {
   //   })
   //   }
   const VerifyOTP = async() => {
-    try {
-      let data = await confirm.confirm(internalVal)
-      console.log(data)
-      Keyboard.dismiss()
-      navigation.navigate('Loading')
-      
-    } catch (error) {
-      console.log('invalid code')
-      setShowError('Mã OTP không đúng')
-    }
+    // try {
+    //   await confirm.confirm(internalVal)
+    //     console.log(data)
+    //     console.log('Đúng OTP')
+    //     Keyboard.dismiss()
+    //     // navigation.navigate('Loading')
+    // } catch (error) {
+    //   console.log(error)
+    //   if(error){
+    //     setShowError('Sai OTP')
+    //   }
+    // }
+    
+      const credential = auth.PhoneAuthProvider.credential(confirm.verificationId, internalVal)
+      console.log('Credential là' + JSON.stringify(credential))
+      auth().signInWithCredential(credential).then((res) =>{
+          console.log('có code' + secretOTP)
+          console.log('thành công' + JSON.stringify(res))
+          console.log('Đúng OTP')
+          navigation.navigate('Loading')
+          setShowError('')
+        })
+      .catch(error => {
+        console.log('lỗi' + error)
+        setShowError('Sai mã OTP')
+      })
   }
   return (
       <SafeAreaView style={styles.container}>
