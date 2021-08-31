@@ -302,7 +302,7 @@ const Info = ({navigation, route}) => {
         return(
             <View>
                 <View style={styles.titleContent}>
-                    <Text style={{fontSize: 14, color: GRAY, fontWeight: 'bold'}}>Thông tin người gửi</Text>
+                    <Text style={{fontSize: 14, color: GRAY, fontWeight: 'bold'}}>Thông tin người nhận</Text>
                 </View>
                 <View style={{flexDirection: 'column', }}>
                     <View style={{flexDirection: 'row',borderBottomWidth: 0.2, padding: 20, }}>

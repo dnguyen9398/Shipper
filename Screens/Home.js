@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, SafeAreaView, TextInput } from 'react-native';
 import { TouchableOpacity, ToastAndroid } from 'react-native';
 import { Image } from 'react-native';
+import { BackHandler } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -14,8 +15,28 @@ import { asyncGET } from '../global/func';
 const Home = ({navigation, route}) => {
     const [QRcode, setQRcode] = useState('')
     const [showError, setShowError] = useState('');
-    const [openMenu, setOpenMenu] = useState(false)
+    const [openMenu, setOpenMenu] = useState(false);
+    const [exitApp,setExitApp]=useState(false)
+
+    const backAction = () => {
+        if(exitApp==false){
+            setExitApp(true);
+            ToastAndroid.show('Bấm 2 lần để thoát', ToastAndroid.SHORT)
+        }
+        else if(exitApp==true){
+            BackHandler.exitApp()
+        }
+        return true
+    };
     // var token = AsyncStorage.getItem('token')
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress', backAction
+        );
+        return () => backHandler.remove()
+        }
+    ,[exitApp])
+    
     const GetOrderByCode = () =>{
         asyncGET(`api/search/${QRcode}`).then((res) =>{
             if (res.Status = 200) {
